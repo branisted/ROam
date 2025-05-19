@@ -23,7 +23,7 @@ This application was developed as part of the FIS course project, with the follo
 
 | Layer           | Technology                                  |
 |-----------------|---------------------------------------------|
-| Frontend        | React, Vite, TailwindCSS                    |
+| Frontend        | React                                       |
 | Backend         | Node.js, Express.js                         |
 | Database        | SQLite (via sqlite3)                        |
 | Auth            | bcrypt, express-session                     |
