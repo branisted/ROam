@@ -5,10 +5,10 @@ const router = express.Router();
 
 // Add post
 router.post('/', (req, res) => {
-    const { title, content, author_id } = req.body;
+    const { title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id } = req.body;
     db.run(
-        `INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)`,
-        [title, content, author_id],
+        `INSERT INTO posts (title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id],
         function(err) {
             if (err) return res.status(500).json({ message: 'Failed to add post' });
             res.status(201).json({ message: 'Post created', postId: this.lastID });

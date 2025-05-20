@@ -7,8 +7,11 @@ function Register() {
 
     const [formData, setFormData] = useState({
         username: '',
-        email: '',
         password: '',
+        full_name: '',
+        city: '',
+        email: '',
+        bio: '',
         role: 'explorer' // default value
     });
 
@@ -48,6 +51,30 @@ function Register() {
                     required
                 /><br/><br/>
                 <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                /><br/><br/>
+                <input
+                    type="text"
+                    name="full_name"
+                    placeholder="Full Name"
+                    value={formData.full_name}
+                    onChange={handleChange}
+                    required
+                /><br/><br/>
+                <input
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                /><br/><br/>
+                <input
                     type="email"
                     name="email"
                     placeholder="Email"
@@ -56,10 +83,10 @@ function Register() {
                     required
                 /><br/><br/>
                 <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
+                    type="text"
+                    name="bio"
+                    placeholder="Bio (optional)"
+                    value={formData.bio}
                     onChange={handleChange}
                     required
                 /><br/><br/>

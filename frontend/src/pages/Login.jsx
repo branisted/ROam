@@ -6,7 +6,7 @@ import { AuthContext } from "../context/AuthContext.jsx";
 
 function Login() {
     const { login } = useContext(AuthContext);
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -38,10 +38,10 @@ function Login() {
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
+                    type="username"
+                    name="username"
+                    placeholder="username"
+                    value={formData.username}
                     onChange={handleChange}
                     required
                 /><br/><br/>
