@@ -1,15 +1,13 @@
-// App.jsx
-import { Routes, Route } from 'react-router-dom';
-import Register from './pages/Register.jsx';
-import Login from './pages/Login.jsx';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes';
+import Navbar from './components/Navbar';
 
 function App() {
     return (
-        <Routes>
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            {/* Add more routes like <Login /> later */}
-        </Routes>
+        <BrowserRouter>
+            <Navbar />
+            <AppRoutes />
+        </BrowserRouter>
     );
 }
 
