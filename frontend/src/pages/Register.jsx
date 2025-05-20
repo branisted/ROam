@@ -32,71 +32,87 @@ function Register() {
             });
             navigate('/login');
         } catch (err) {
-                console.error('Registration error:', err); // <== log full error
-                setError(err.response?.data?.message || 'Registration failed');
-            }
-
-        };
+            console.error('Registration error:', err);
+            setError(err.response?.data?.message || 'Registration failed');
+        }
+    };
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <h2>Register</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                /><br/><br/>
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                /><br/><br/>
-                <input
-                    type="text"
-                    name="full_name"
-                    placeholder="Full Name"
-                    value={formData.full_name}
-                    onChange={handleChange}
-                    required
-                /><br/><br/>
-                <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                /><br/><br/>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                /><br/><br/>
-                <input
-                    type="text"
-                    name="bio"
-                    placeholder="Bio (optional)"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    required
-                /><br/><br/>
-                <select name="role" value={formData.role} onChange={handleChange}>
-                    <option value="explorer">explorer</option>
-                    <option value="guide">guide</option>
-                </select>
-                <button type="submit">Register</button>
-            </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+                <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        required
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="text"
+                        name="full_name"
+                        placeholder="Full Name"
+                        value={formData.full_name}
+                        onChange={handleChange}
+                        required
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="text"
+                        name="bio"
+                        placeholder="Bio (optional)"
+                        value={formData.bio}
+                        onChange={handleChange}
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                        <option value="explorer">Explorer</option>
+                        <option value="guide">Guide</option>
+                    </select>
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+                    >
+                        Register
+                    </button>
+                </form>
+                {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+            </div>
         </div>
     );
 }
