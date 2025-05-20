@@ -8,7 +8,7 @@ function Navbar() {
     const userRole = user ? user.role : null;
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
+        <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
             <div className="flex items-center gap-4">
                 <Link to="/" className="text-white font-semibold hover:underline">Home</Link>
                 <Link to="/" className="text-white font-semibold hover:underline">Posts</Link>
