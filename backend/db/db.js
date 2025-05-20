@@ -22,12 +22,12 @@ db.serialize(() => {
     db.run(`
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT,
-        full_name TEXT,
-        city TEXT,
-        email TEXT UNIQUE,
-        bio TEXT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        full_name TEXT NOT NULL,
+        city TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        bio TEXT DEFAULT 'No bio.',
         role TEXT CHECK(role IN ('explorer', 'guide')) DEFAULT 'explorer'
         )
     `);

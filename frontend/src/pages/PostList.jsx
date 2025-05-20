@@ -29,7 +29,7 @@ function PostList() {
                         <li key={post.id} style={{ marginBottom: '1rem' }}>
                             <strong>{post.title}</strong> <br />
                             by {post.username} <br />
-                            <p>{post.content}</p>
+                            <p>{post.description}</p>
                         </li>
                     ))}
                 </ul>

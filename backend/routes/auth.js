@@ -5,20 +5,20 @@ const router = express.Router();
 import db from '../db/db.js';
 
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
-        // Get user by email
-        db.get(`SELECT * FROM users WHERE email = ?`, [email], async (err, user) => {
+        // Get user by username
+        db.get(`SELECT * FROM users WHERE username = ?`, [username], async (err, user) => {
             if (err) return res.status(500).json({ message: 'Database error' });
-            if (!user) return res.status(401).json({ message: 'Invalid email or password' });
+            if (!user) return res.status(401).json({ message: 'Invalid username or password' });
 
             // Compare password
             const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
+            if (!isMatch) return res.status(401).json({ message: 'Invalid username or password' });
 
             // Successful login
-            console.log("Login successfull: ", user);
+            console.log("Login successful: ", user);
             res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username, role: user.role } });
         });
 
@@ -28,18 +28,18 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { username, email, password, role = 'explorer' } = req.body;
+    const { username, password, full_name, city, email, bio, role = 'explorer' } = req.body;
 
     try {
         const existingUser = await new Promise((resolve, reject) => {
-            db.get("SELECT * FROM users WHERE email = ?", [email], (err, row) => {
+            db.get("SELECT * FROM users WHERE username = ?", [email], (err, row) => {
                 if (err) return reject(err);
                 resolve(row);
             });
         });
 
         if (existingUser) {
-            return res.status(400).json({ message: "Email already registered." });
+            return res.status(400).json({ message: "Username already registered." });
         }
 
         const saltRounds = 10;
@@ -47,8 +47,8 @@ router.post('/register', async (req, res) => {
 
         await new Promise((resolve, reject) => {
             db.run(
-                "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)",
-                [username, email, hashedPassword, role],
+                "INSERT INTO users (username, password, full_name, city, email, bio, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [username, hashedPassword, full_name, city, email, bio, role],
                 function (err) {
                     if (err) return reject(err);
                     resolve();
