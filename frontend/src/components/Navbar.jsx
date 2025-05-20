@@ -21,11 +21,17 @@ function Navbar() {
                 </>
             )}
 
+            {/* Only show Add Post for users with role "guide" */}
+            {user && JSON.parse(localStorage.getItem('user')).role === "guide" && (
+                <>
+                    <Link to="/add-post">Add Post</Link> |{' '}
+                </>
+            )}
+
             {/* Show Log out if logged in */}
             {user && (
                 <>
-                <Link to="/add-post">Add Post</Link> |{' '}
-                <button onClick={logout}>Log out</button>
+                    <button onClick={logout}>Log out</button>
                 </>
             )}
 

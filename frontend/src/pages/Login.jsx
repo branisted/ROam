@@ -26,6 +26,7 @@ function Login() {
             console.log(res.data);
             // Navigate or store login session here
             login(JSON.stringify(res.data.user));
+            console.log(res.data.user);
             navigate('/'); // Or wherever you want to go after login
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');
