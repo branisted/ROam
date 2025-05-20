@@ -11,13 +11,13 @@ function AddPost() {
     const handleSubmit = async e => {
         e.preventDefault();
         try {
-            const author_id = 1; // 🔐 Replace this with the actual user ID (from context or login)
+            const author_id = JSON.parse(localStorage.getItem('user')).id; // 🔐 Replace this with the actual user ID (from context or login)
             await axios.post('http://localhost:3001/api/posts', {
                 title,
                 content,
                 author_id,
             });
-            navigate('/posts');
+            navigate('/');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to create post');
         }
