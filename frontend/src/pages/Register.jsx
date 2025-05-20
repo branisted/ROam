@@ -8,7 +8,8 @@ function Register() {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
-        password: ''
+        password: '',
+        role: 'explorer' // default value
     });
 
     const [error, setError] = useState('');
@@ -62,6 +63,10 @@ function Register() {
                     onChange={handleChange}
                     required
                 /><br/><br/>
+                <select name="role" value={formData.role} onChange={handleChange}>
+                    <option value="explorer">explorer</option>
+                    <option value="guide">guide</option>
+                </select>
                 <button type="submit">Register</button>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
