@@ -4,6 +4,29 @@ const router = express.Router();
 
 import db from '../db/db.js';
 
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Get user by email
+        db.get(`SELECT * FROM users WHERE email = ?`, [email], async (err, user) => {
+            if (err) return res.status(500).json({ message: 'Database error' });
+            if (!user) return res.status(401).json({ message: 'Invalid email or password' });
+
+            // Compare password
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
+
+            // Successful login
+            console.log("Login successfull: ", user);
+            res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username, role: user.role } });
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+});
+
 router.post('/register', async (req, res) => {
     const { username, email, password, role = 'explorer' } = req.body;
 
