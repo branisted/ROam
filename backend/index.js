@@ -1,29 +1,19 @@
-const express = require('express');
+import express from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth.js';
+
 const app = express();
-const port = 3001; // Use a different port than frontend
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-app.listen(port, () => {
-    console.log(`Backend listening at http://localhost:${port}`);
-});
-
-const sqlite3 = require('sqlite3');
-const db = new sqlite3.Database('my-database.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-    if (err) {
-        console.error('Error opening database:', err.message);
-    } else {
-        console.log('Connected to SQLite database');
-    }
-});
-
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-
-app.use(session({
-    secret: 'your_session_secret',
-    resave: false,
-    saveUninitialized: true,
+// 🔧 Allow only frontend origin and credentials
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
 }));
+
+app.use(express.json());
+
+app.use('/api/auth', authRoutes);
+
+app.listen(3001, () => {
+    console.log('Backend running on http://localhost:3001');
+});
