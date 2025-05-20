@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function Login() {
+    const { login } = useContext(AuthContext);
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -22,7 +25,7 @@ function Login() {
             });
             console.log(res.data);
             // Navigate or store login session here
-            localStorage.setItem('user', JSON.stringify(res.data.user));
+            login(JSON.stringify(res.data.user));
             navigate('/'); // Or wherever you want to go after login
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');

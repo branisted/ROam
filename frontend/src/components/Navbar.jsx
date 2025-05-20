@@ -1,33 +1,10 @@
 import { Link } from 'react-router-dom';
-
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function Navbar() {
-    const [user, setUser] = useState(null);
-    const navigate = useNavigate();
 
-    // Check login state on mount and when localStorage changes
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        setUser(storedUser ? JSON.parse(storedUser) : null);
-    }, []);
-
-    // Optional: Listen to storage events for cross-tab sync
-    useEffect(() => {
-        const syncUser = () => {
-            const storedUser = localStorage.getItem("user");
-            setUser(storedUser ? JSON.parse(storedUser) : null);
-        };
-        window.addEventListener("storage", syncUser);
-        return () => window.removeEventListener("storage", syncUser);
-    }, []);
-
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-        setUser(null);
-        navigate("/login");
-    };
+    const { user, logout } = useContext(AuthContext);
 
     return (
         <nav style={{ padding: '1rem', background: '#eee' }}>
@@ -48,7 +25,7 @@ function Navbar() {
             {user && (
                 <>
                 <Link to="/add-post">Add Post</Link> |{' '}
-                <button onClick={handleLogout}>Log out</button>
+                <button onClick={logout}>Log out</button>
                 </>
             )}
 
