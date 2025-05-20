@@ -23,8 +23,11 @@ db.serialize(() => {
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
-        email TEXT UNIQUE,
         password TEXT,
+        full_name TEXT,
+        city TEXT,
+        email TEXT UNIQUE,
+        bio TEXT,
         role TEXT CHECK(role IN ('explorer', 'guide')) DEFAULT 'explorer'
         )
     `);
@@ -35,7 +38,12 @@ db.serialize(() => {
         CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        content TEXT NOT NULL,
+        location TEXT NOT NULL,
+        type TEXT CHECK(type IN ('hike', 'bike ride', 'urban walk', 'nature tour', 'forest trail', 'mountain climb', 'city exploration', 'river walk', 'wildlife spotting', 'historical tour', 'food tour', 'cycling', 'stargazing', 'camping', 'other')) DEFAULT 'other',
+        difficulty TEXT CHECK(difficulty IN ('easy', 'moderate', 'hard')) DEFAULT 'easy',
+        estimated_duration TEXT NOT NULL,
+        photo BLOB,
+        description TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         author_id INTEGER NOT NULL,
         likes INTEGER DEFAULT 0,
