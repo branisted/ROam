@@ -33,11 +33,7 @@ function PostList() {
                             {/* Optional photo */}
                             {post.photo && (
                                 <img
-                                    src={
-                                        post.photo.startsWith('http')
-                                            ? post.photo
-                                            : `data:image/jpeg;base64,${post.photo}`
-                                    }
+                                    src={post.photo}
                                     alt={post.title}
                                     className="w-full h-48 object-cover rounded mb-4"
                                 />

@@ -20,17 +20,17 @@ const upload = multer({ storage });
 
 // Add post
 router.post('/', upload.single('photo'), (req, res) => {
-    const { title, location, type, difficulty, estimated_duration, description, created_at, author_id } = req.body;
-    const photo = req.file ? `/uploads/${req.file.filename}` : null;
+    const { title, location, type, difficulty, estimated_duration, description, author_id } = req.body;
+    const photo = req.file
+        ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+        : null;
+    const created_at = new Date().toISOString();
 
     db.run(
         `INSERT INTO posts (title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id],
-        function(err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: 'Failed to add post' });
-            }
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Failed to add post' });
             res.status(201).json({ message: 'Post created', postId: this.lastID });
         }
     );
