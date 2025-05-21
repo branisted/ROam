@@ -10,6 +10,9 @@ function AddPost() {
     const [estimated_duration, setEstimatedDuration] = useState('');
     const [photoFile, setPhotoFile] = useState(null);
     const [description, setDescription] = useState('');
+    const [isJoinable, setIsJoinable] = useState(false);
+    const [maxParticipants, setMaxParticipants] = useState('');
+    const [startsOn, setStartsOn] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -26,6 +29,14 @@ function AddPost() {
             formData.append('estimated_duration', estimated_duration);
             formData.append('description', description);
             formData.append('author_id', author_id);
+            formData.append('starts_on', startsOn); // New field
+
+            // New joinable fields
+            formData.append('is_joinable', isJoinable ? 1 : 0);
+            if (isJoinable && maxParticipants) {
+                formData.append('max_participants', maxParticipants);
+            }
+
             if (photoFile) {
                 formData.append('photo', photoFile);
             }
@@ -114,6 +125,38 @@ function AddPost() {
                         rows="5"
                         required
                         className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                    />
+                    {/* New fields for joinable adventure */}
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="isJoinable"
+                            checked={isJoinable}
+                            onChange={e => {
+                                setIsJoinable(e.target.checked);
+                                if (!e.target.checked) setMaxParticipants('');
+                            }}
+                            className="w-4 h-4"
+                        />
+                        <label htmlFor="isJoinable" className="font-medium">Make this adventure joinable</label>
+                    </div>
+                    <input
+                        type="number"
+                        min="1"
+                        placeholder="Max participants (leave blank for unlimited)"
+                        value={maxParticipants}
+                        onChange={e => setMaxParticipants(e.target.value.replace(/^0+/, ''))}
+                        disabled={!isJoinable}
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    {/* New starts_on field */}
+                    <label className="block font-medium">Start Date & Time</label>
+                    <input
+                        type="datetime-local"
+                        value={startsOn}
+                        onChange={e => setStartsOn(e.target.value)}
+                        required
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <button
                         type="submit"

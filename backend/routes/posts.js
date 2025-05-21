@@ -29,23 +29,33 @@ router.post('/', upload.single('photo'), (req, res) => {
         description,
         author_id,
         is_joinable,
-        max_participants
+        max_participants,
+        starts_on
     } = req.body;
+
+    // Validate required fields
+    if (!starts_on) {
+        return res.status(400).json({ message: 'Start date is required' });
+    }
 
     const photo = req.file
         ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
         : null;
     const created_at = new Date().toISOString();
 
-    // Parse is_joinable as integer (0 or 1), default to 0 if undefined
+    // Format datetime to SQLite-compatible format (YYYY-MM-DD HH:mm:ss)
+    const startsOn = starts_on.replace('T', ' ') + ':00';
+
+    // Parse joinable fields
     const joinable = typeof is_joinable !== "undefined" ? Number(is_joinable) : 0;
-    // Parse max_participants as integer or null
     const maxParts = max_participants ? Number(max_participants) : null;
 
     db.run(
         `INSERT INTO posts (
-            title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id, is_joinable, max_participants
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            title, location, type, difficulty, estimated_duration,
+            photo, description, created_at, author_id,
+            starts_on, is_joinable, max_participants
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             title,
             location,
@@ -56,6 +66,7 @@ router.post('/', upload.single('photo'), (req, res) => {
             description,
             created_at,
             author_id,
+            startsOn,
             joinable,
             maxParts
         ],
