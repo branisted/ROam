@@ -49,6 +49,7 @@ db.serialize(() => {
             likes INTEGER DEFAULT 0,
             is_joinable BOOLEAN DEFAULT 0,
             max_participants INTEGER DEFAULT NULL,
+            starts_on DATETIME NOT NULL,
             FOREIGN KEY (author_id) REFERENCES users(id)
             )
     `);
