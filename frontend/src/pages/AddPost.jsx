@@ -8,7 +8,7 @@ function AddPost() {
     const [type, setType] = useState('hike');
     const [difficulty, setDifficulty] = useState('easy');
     const [estimated_duration, setEstimatedDuration] = useState('');
-    const [photo, setPhoto] = useState('');
+    const [photoFile, setPhotoFile] = useState(null);
     const [description, setDescription] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -17,16 +17,25 @@ function AddPost() {
         e.preventDefault();
         try {
             const author_id = JSON.parse(localStorage.getItem('user')).id;
-            await axios.post('http://localhost:3001/api/posts', {
-                title,
-                location,
-                type,
-                difficulty,
-                estimated_duration,
-                photo,
-                description,
-                author_id
+            const formData = new FormData();
+
+            formData.append('title', title);
+            formData.append('location', location);
+            formData.append('type', type);
+            formData.append('difficulty', difficulty);
+            formData.append('estimated_duration', estimated_duration);
+            formData.append('description', description);
+            formData.append('author_id', author_id);
+            if (photoFile) {
+                formData.append('photo', photoFile);
+            }
+
+            await axios.post('http://localhost:3001/api/posts', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
+
             navigate('/');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to create post');
@@ -37,7 +46,7 @@ function AddPost() {
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
                 <h2 className="text-2xl font-bold mb-6 text-center">Create New Adventure</h2>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4" encType="multipart/form-data">
                     <input
                         type="text"
                         placeholder="Title"
@@ -93,10 +102,9 @@ function AddPost() {
                         className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
-                        type="text"
-                        placeholder="Photo URL (optional)"
-                        value={photo}
-                        onChange={e => setPhoto(e.target.value)}
+                        type="file"
+                        accept="image/*"
+                        onChange={e => setPhotoFile(e.target.files[0])}
                         className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <textarea
