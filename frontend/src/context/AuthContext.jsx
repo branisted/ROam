@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
     }, []);
 
     const login = (userData) => {
-        localStorage.setItem("user", userData);
+        localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
     };
 

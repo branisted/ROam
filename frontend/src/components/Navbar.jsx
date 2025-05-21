@@ -1,40 +1,39 @@
+// Navbar.jsx
 import { Link } from 'react-router-dom';
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 function Navbar() {
-
     const { user, logout } = useContext(AuthContext);
+    const userRole = user ? user.role : null;
 
     return (
-        <nav style={{ padding: '1rem', background: '#eee' }}>
-
-            {/* Always show Home */}
-            <Link to="/">Home</Link> |{' '}
-            <Link to="/">Posts</Link> |{' '}
-
-            {/* Show Register and Log in if NOT logged in */}
-            {!user && (
-                <>
-                    <Link to="/register">Register</Link> |{' '}
-                    <Link to="/login">Login</Link>
-                </>
-            )}
-
-            {/* Only show Add Post for users with role "guide" */}
-            {user && JSON.parse(localStorage.getItem('user')).role === "guide" && (
-                <>
-                    <Link to="/add-post">Add Post</Link> |{' '}
-                </>
-            )}
-
-            {/* Show Log out if logged in */}
-            {user && (
-                <>
-                    <button onClick={logout}>Log out</button>
-                </>
-            )}
-
+        <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
+            <div className="flex items-center gap-4">
+                <Link to="/" className="text-white font-semibold hover:underline">Home</Link>
+                <Link to="/" className="text-white font-semibold hover:underline">Posts</Link>
+                {userRole === "guide" && (
+                    <Link to="/add-post" className="text-white font-semibold hover:underline">
+                        Add Post
+                    </Link>
+                )}
+            </div>
+            <div className="flex items-center gap-4">
+                {!user && (
+                    <>
+                        <Link to="/register" className="text-white hover:underline">Register</Link>
+                        <Link to="/login" className="text-white hover:underline">Login</Link>
+                    </>
+                )}
+                {user && (
+                    <button
+                        onClick={logout}
+                        className="bg-white text-blue-600 font-semibold px-4 py-1 rounded hover:bg-blue-100 transition"
+                    >
+                        Log out
+                    </button>
+                )}
+            </div>
         </nav>
     );
 }

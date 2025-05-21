@@ -5,8 +5,12 @@ import Navbar from './components/Navbar';
 function App() {
     return (
         <BrowserRouter>
-            <Navbar />
-            <AppRoutes />
+            <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <main className="flex-1 overflow-y-auto">
+                    <AppRoutes />
+                </main>
+            </div>
         </BrowserRouter>
     );
 }
