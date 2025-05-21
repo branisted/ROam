@@ -1,16 +1,36 @@
 import express from 'express';
 import db from '../db/db.js';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const router = express.Router();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, '../uploads'),
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '_' + file.originalname);
+    }
+});
+
+const upload = multer({ storage });
+
 // Add post
-router.post('/', (req, res) => {
-    const { title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id } = req.body;
+router.post('/', upload.single('photo'), (req, res) => {
+    const { title, location, type, difficulty, estimated_duration, description, created_at, author_id } = req.body;
+    const photo = req.file ? `/uploads/${req.file.filename}` : null;
+
     db.run(
         `INSERT INTO posts (title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [title, location, type, difficulty, estimated_duration, photo, description, created_at, author_id],
         function(err) {
-            if (err) return res.status(500).json({ message: 'Failed to add post' });
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Failed to add post' });
+            }
             res.status(201).json({ message: 'Post created', postId: this.lastID });
         }
     );

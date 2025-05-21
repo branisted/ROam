@@ -3,6 +3,7 @@ node_modules/
 *.db
 dist/
 build/
+backend/uploads/
 
 # Logs
 logs
