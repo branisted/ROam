@@ -17,6 +17,12 @@ function PostList() {
         fetchPosts();
     }, []);
 
+    // Helper to check if sign-ups are closed
+    const isSignUpClosed = (post) => {
+        if (!post.starts_on) return false;
+        return new Date(post.starts_on) <= new Date();
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4">
             <h2 className="text-3xl font-bold mb-8 text-center text-blue-700">All Adventures</h2>
@@ -70,6 +76,37 @@ function PostList() {
                                     post.location
                                 )}
                             </div>
+                            {/* New: Joinable info */}
+                            {post.is_joinable ? (
+                                <div className="mb-2">
+                                    <span className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded mr-2">
+                                        Joinable
+                                    </span>
+                                    <span className="text-xs text-gray-700">
+                                        {post.max_participants
+                                            ? `Max participants: ${post.max_participants}`
+                                            : 'No participant limit'}
+                                    </span>
+                                    <br />
+                                    <span className="text-xs text-gray-700">
+                                        <span className="font-medium">Starts on:</span>{' '}
+                                        {post.starts_on
+                                            ? new Date(post.starts_on).toLocaleString()
+                                            : 'Not set'}
+                                    </span>
+                                    {isSignUpClosed(post) && (
+                                        <span className="ml-2 text-red-600 font-semibold">
+                                            Sign-ups closed
+                                        </span>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="mb-2">
+                                    <span className="inline-block bg-gray-200 text-gray-500 text-xs px-2 py-1 rounded">
+                                        Not joinable
+                                    </span>
+                                </div>
+                            )}
                             <div className="text-xs text-gray-400 mb-2">
                                 <span className="font-medium">Posted:</span>{' '}
                                 {post.created_at
@@ -77,10 +114,12 @@ function PostList() {
                                     : 'Unknown'}
                             </div>
                             <p className="mb-4 text-gray-700">{post.description}</p>
-                            <div className="flex items-center gap-2 mt-auto">
+
+                            {/*<div className="flex items-center gap-2 mt-auto">
                                 <span className="text-pink-500">♥</span>
                                 <span className="text-gray-600 text-sm">{post.likes} likes</span>
-                            </div>
+                            </div>*/}
+
                         </div>
                     ))}
                 </div>
