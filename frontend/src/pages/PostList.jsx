@@ -4,6 +4,7 @@ import axios from 'axios';
 function PostList() {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
+    const [joining, setJoining] = useState({}); // Track join button loading state
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -19,8 +20,30 @@ function PostList() {
 
     // Helper to check if sign-ups are closed
     const isSignUpClosed = (post) => {
+        const now = new Date();
         if (!post.starts_on) return false;
-        return new Date(post.starts_on) <= new Date();
+        if (new Date(post.starts_on) <= now) return true;
+        if (post.max_participants && post.current_participants >= post.max_participants) return true;
+        return false;
+    };
+
+    const handleJoin = async (postId) => {
+        setJoining(prev => ({ ...prev, [postId]: true }));
+        try {
+            // Replace this with your actual join API endpoint
+            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, {
+                user_id: JSON.parse(localStorage.getItem('user')).id
+            });
+            // Optimistically update UI (re-fetch or update count)
+            setPosts(posts => posts.map(post =>
+                post.id === postId
+                    ? { ...post, current_participants: (post.current_participants || 0) + 1 }
+                    : post
+            ));
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to join');
+        }
+        setJoining(prev => ({ ...prev, [postId]: false }));
     };
 
     return (
@@ -76,28 +99,32 @@ function PostList() {
                                     post.location
                                 )}
                             </div>
-                            {/* New: Joinable info */}
+                            {/* Join button or sign-ups closed */}
                             {post.is_joinable ? (
                                 <div className="mb-2">
-                                    <span className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded mr-2">
-                                        Joinable
-                                    </span>
-                                    <span className="text-xs text-gray-700">
-                                        {post.max_participants
-                                            ? `Max participants: ${post.max_participants}`
-                                            : 'No participant limit'}
-                                    </span>
-                                    <br />
                                     <span className="text-xs text-gray-700">
                                         <span className="font-medium">Starts on:</span>{' '}
                                         {post.starts_on
                                             ? new Date(post.starts_on).toLocaleString()
                                             : 'Not set'}
                                     </span>
-                                    {isSignUpClosed(post) && (
-                                        <span className="ml-2 text-red-600 font-semibold">
-                                            Sign-ups closed
-                                        </span>
+                                    <br />
+                                    <span className="text-xs text-gray-700">
+                                        {post.max_participants
+                                            ? `Participants: ${post.current_participants || 0}/${post.max_participants}`
+                                            : `Participants: ${post.current_participants || 0} (no limit)`}
+                                    </span>
+                                    <br />
+                                    {isSignUpClosed(post) ? (
+                                        <span className="text-red-600 font-semibold">Sign-ups closed</span>
+                                    ) : (
+                                        <button
+                                            className="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition"
+                                            onClick={() => handleJoin(post.id)}
+                                            disabled={joining[post.id]}
+                                        >
+                                            {joining[post.id] ? 'Joining...' : 'Join'}
+                                        </button>
                                     )}
                                 </div>
                             ) : (
@@ -114,12 +141,6 @@ function PostList() {
                                     : 'Unknown'}
                             </div>
                             <p className="mb-4 text-gray-700">{post.description}</p>
-
-                            {/*<div className="flex items-center gap-2 mt-auto">
-                                <span className="text-pink-500">♥</span>
-                                <span className="text-gray-600 text-sm">{post.likes} likes</span>
-                            </div>*/}
-
                         </div>
                     ))}
                 </div>
