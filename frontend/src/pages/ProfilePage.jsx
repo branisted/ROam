@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function ProfilePage() {
     const { user } = useContext(AuthContext);
@@ -81,12 +82,14 @@ function ProfilePage() {
                     ) : (
                         <ul className="space-y-2">
                             {profile.joinedPosts.map(post => (
-                                <li key={post.id} className="border p-2 rounded">
-                                    <div className="font-medium">{post.title}</div>
-                                    <div className="text-sm text-gray-600">{post.location}</div>
-                                    <div className="text-xs text-gray-400">
-                                        Starts on: {new Date(post.starts_on).toLocaleString()}
-                                    </div>
+                                <li key={post.id} className="border p-2 rounded hover:bg-gray-50 transition">
+                                    <Link to={`/hunts/${post.id}`} className="block">
+                                        <div className="font-medium">{post.title}</div>
+                                        <div className="text-sm text-gray-600">{post.location}</div>
+                                        <div className="text-xs text-gray-400">
+                                            Starts on: {new Date(post.starts_on).toLocaleString()}
+                                        </div>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
@@ -101,12 +104,14 @@ function ProfilePage() {
                     ) : (
                         <ul className="space-y-2">
                             {adventures.map(post => (
-                                <li key={post.id} className="border p-2 rounded">
-                                    <div className="font-medium">{post.title}</div>
-                                    <div className="text-sm text-gray-600">{post.location}</div>
-                                    <div className="text-xs text-gray-400">
-                                        Starts on: {new Date(post.starts_on).toLocaleString()}
-                                    </div>
+                                <li key={post.id} className="border p-2 rounded hover:bg-gray-50 transition">
+                                    <Link to={`/hunts/${post.id}`} className="block">
+                                        <div className="font-medium">{post.title}</div>
+                                        <div className="text-sm text-gray-600">{post.location}</div>
+                                        <div className="text-xs text-gray-400">
+                                            Starts on: {new Date(post.starts_on).toLocaleString()}
+                                        </div>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>

@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 function PostList() {
     const [posts, setPosts] = useState([]);
@@ -8,6 +9,7 @@ function PostList() {
     const [joining, setJoining] = useState({});
     const [joinedPosts, setJoinedPosts] = useState(new Set());
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -39,7 +41,8 @@ function PostList() {
         setJoining(prev => ({ ...prev, [postId]: true }));
         try {
             await axios.post(`http://localhost:3001/api/posts/${postId}/join`, { user_id: user.id });
-            setJoinedPosts(prev => new Set([...prev, postId])); // Add post to joined set
+            setJoinedPosts(prev => new Set([...prev, postId]));
+            navigate(`/hunts/${postId}`);
         } catch (err) {
             console.error(err);
         } finally {
@@ -58,7 +61,15 @@ function PostList() {
                     {posts.map(post => (
                         <div
                             key={post.id}
-                            className="bg-white rounded-lg shadow-md p-6 flex flex-col"
+                            className="bg-white rounded-lg shadow-md p-6 flex flex-col cursor-pointer group relative"
+                            onClick={() => navigate(`/hunts/${post.id}`)}
+                            tabIndex={0}
+                            role="button"
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    navigate(`/hunts/${post.id}`);
+                                }
+                            }}
                         >
                             {post.photo && (
                                 <img
@@ -92,6 +103,7 @@ function PostList() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-500 underline"
+                                        onClick={e => e.stopPropagation()} // Prevent card click
                                     >
                                         Map Link
                                     </a>
@@ -117,11 +129,13 @@ function PostList() {
                                     {isSignUpClosed(post) ? (
                                         <span className="text-red-600 font-semibold">Sign-ups closed</span>
                                     ) : (
-                                        // Only show Join button for explorers
                                         user?.role === 'explorer' && (
                                             <button
                                                 className="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition disabled:bg-gray-400"
-                                                onClick={() => handleJoin(post.id)}
+                                                onClick={e => {
+                                                    e.stopPropagation(); // Prevent card click
+                                                    handleJoin(post.id);
+                                                }}
                                                 disabled={joining[post.id] || joinedPosts.has(post.id)}
                                             >
                                                 {joinedPosts.has(post.id)
