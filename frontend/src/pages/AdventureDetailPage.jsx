@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
@@ -11,6 +12,7 @@ function AdventureDetailPage() {
     const [participants, setParticipants] = useState([]);
     const [isJoining, setIsJoining] = useState(false);
     const [joined, setJoined] = useState(false);
+    const navigate = useNavigate();
 
     const { user } = useContext(AuthContext);
 
@@ -123,6 +125,33 @@ function AdventureDetailPage() {
                             ))}
                         </ul>
                     )}
+                </div>
+            )}
+            {user && user.role === "guide" && (
+                <div className="mt-4 flex gap-2">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
+                        onClick={() => navigate(`/edit-adventure/${id}`)}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
+                        onClick={async () => {
+                            if (window.confirm("Are you sure you want to delete this adventure?")) {
+                                try {
+                                    await axios.delete(`http://localhost:3001/api/posts/${id}`, {
+                                        data: { user_id: user.id }
+                                    });
+                                    navigate('/'); // Redirect after deletion
+                                } catch (err) {
+                                    alert("Failed to delete adventure");
+                                }
+                            }
+                        }}
+                    >
+                        Delete
+                    </button>
                 </div>
             )}
         </div>
