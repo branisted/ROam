@@ -6,6 +6,7 @@ import PostList from './pages/PostList';
 import ProfilePage from './pages/ProfilePage';
 import AdventureDetailPage from './pages/AdventureDetailPage.jsx';
 import SearchPage from "./pages/SearchPage.jsx";
+import EditAdventurePage from "./pages/EditAdventurePage.jsx";
 
 function AppRoutes() {
     return (
@@ -17,6 +18,7 @@ function AppRoutes() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/adventure/:id" element={<AdventureDetailPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/edit-adventure/:id" element={<EditAdventurePage />} />
         </Routes>
     );
 }
