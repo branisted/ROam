@@ -1,14 +1,10 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function PostList() {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
-    const [joining, setJoining] = useState({});
-    const [joinedPosts, setJoinedPosts] = useState(new Set());
-    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,37 +14,11 @@ function PostList() {
                 setPosts(res.data);
             } catch (err) {
                 setError('Failed to load posts');
+                console.log(err);
             }
         };
         fetchPosts();
     }, []);
-
-    const isSignUpClosed = (post) => {
-        const now = new Date();
-        if (!post.starts_on) return false;
-        if (new Date(post.starts_on) <= now) return true;
-        if (post.max_participants && post.current_participants >= post.max_participants) return true;
-        return false;
-    };
-
-    const handleJoin = async (postId) => {
-        if (!user || !user.id) {
-            alert("You must be logged in to join an adventure.");
-            setJoining(prev => ({ ...prev, [postId]: false }));
-            return;
-        }
-
-        setJoining(prev => ({ ...prev, [postId]: true }));
-        try {
-            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, { user_id: user.id });
-            setJoinedPosts(prev => new Set([...prev, postId]));
-            navigate(`/adventure/${postId}`);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setJoining(prev => ({ ...prev, [postId]: false }));
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -111,48 +81,6 @@ function PostList() {
                                     post.location
                                 )}
                             </div>
-                            {post.is_joinable ? (
-                                <div className="mb-2">
-                                    <span className="text-xs text-gray-700">
-                                        <span className="font-medium">Starts on:</span>{' '}
-                                        {post.starts_on
-                                            ? new Date(post.starts_on).toLocaleString()
-                                            : 'Not set'}
-                                    </span>
-                                    <br />
-                                    <span className="text-xs text-gray-700">
-                                        {post.max_participants
-                                            ? `Participants: ${post.current_participants || 0}/${post.max_participants}`
-                                            : `Participants: ${post.current_participants || 0} (no limit)`}
-                                    </span>
-                                    <br />
-                                    {isSignUpClosed(post) ? (
-                                        <span className="text-red-600 font-semibold">Sign-ups closed</span>
-                                    ) : (
-                                        user?.role === 'explorer' && (
-                                            <button
-                                                className="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition disabled:bg-gray-400"
-                                                onClick={e => {
-                                                    e.stopPropagation(); // Prevent card click
-                                                    handleJoin(post.id);
-                                                }}
-                                                disabled={joining[post.id] || joinedPosts.has(post.id)}
-                                            >
-                                                {joinedPosts.has(post.id)
-                                                    ? 'Joined'
-                                                    : (joining[post.id] ? 'Joining...' : 'Join')
-                                                }
-                                            </button>
-                                        )
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="mb-2">
-                                    <span className="inline-block bg-gray-200 text-gray-500 text-xs px-2 py-1 rounded">
-                                        Not joinable
-                                    </span>
-                                </div>
-                            )}
                             <div className="text-xs text-gray-400 mb-2">
                                 <span className="font-medium">Posted:</span>{' '}
                                 {post.created_at
