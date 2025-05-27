@@ -151,6 +151,19 @@ router.post('/:id/join', (req, res) => {
     );
 });
 
+router.post('/:id/unjoin', (req, res) => {
+    const { user_id } = req.body;
+    const post_id = req.params.id;
+    db.run(
+        `DELETE FROM adventure_participants WHERE user_id = ? AND post_id = ?`,
+        [user_id, post_id],
+        function (err) {
+            if (err) return res.status(500).json({ message: 'Failed to unjoin' });
+            res.json({ message: 'Unjoined successfully' });
+        }
+    );
+});
+
 router.get('/:id', (req, res) => {
     const postId = req.params.id;
     db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post) => {
@@ -159,5 +172,22 @@ router.get('/:id', (req, res) => {
         res.json(post);
     });
 });
+
+// Get all participants for a post
+router.get('/:id/participants', (req, res) => {
+    const postId = req.params.id;
+    db.all(
+        `SELECT users.id, users.username, users.email
+         FROM adventure_participants
+         JOIN users ON users.id = adventure_participants.user_id
+         WHERE adventure_participants.post_id = ?`,
+        [postId],
+        (err, rows) => {
+            if (err) return res.status(500).json({ message: 'DB error' });
+            res.json(rows);
+        }
+    );
+});
+
 
 export default router;
