@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function PostList() {
     const [posts, setPosts] = useState([]);
@@ -8,6 +9,7 @@ function PostList() {
     const [joining, setJoining] = useState({});
     const [joinedPosts, setJoinedPosts] = useState(new Set());
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -39,13 +41,16 @@ function PostList() {
         setJoining(prev => ({ ...prev, [postId]: true }));
         try {
             await axios.post(`http://localhost:3001/api/posts/${postId}/join`, { user_id: user.id });
-            setJoinedPosts(prev => new Set([...prev, postId])); // Add post to joined set
+            setJoinedPosts(prev => new Set([...prev, postId]));
+            // Redirect to the hunt details page
+            navigate(`/hunts/${postId}`);
         } catch (err) {
             console.error(err);
         } finally {
             setJoining(prev => ({ ...prev, [postId]: false }));
         }
     };
+
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4">

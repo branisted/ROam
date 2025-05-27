@@ -151,4 +151,13 @@ router.post('/:id/join', (req, res) => {
     );
 });
 
+router.get('/:id', (req, res) => {
+    const postId = req.params.id;
+    db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post) => {
+        if (err) return res.status(500).json({ message: 'DB error' });
+        if (!post) return res.status(404).json({ message: 'Post not found' });
+        res.json(post);
+    });
+});
+
 export default router;
