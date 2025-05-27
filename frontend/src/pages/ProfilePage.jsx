@@ -35,6 +35,15 @@ function ProfilePage() {
                     setLoading(false);
                 });
         } else if (user.role === "guide") {
+            axios.get(`http://localhost:3001/api/users/${user.id}/profile`)
+                .then(res => {
+                    setProfile(res.data);
+                    setLoading(false);
+                })
+                .catch(() => {
+                    setError('Could not load profile');
+                    setLoading(false);
+                });
             axios.get(`http://localhost:3001/api/users/${user.id}/created-adventures`)
                 .then(res => {
                     setAdventures(res.data);
@@ -53,6 +62,8 @@ function ProfilePage() {
     if (!user) return null;
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
+
+    console.log(profile);
 
     return (
         <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
