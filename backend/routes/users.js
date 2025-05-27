@@ -30,4 +30,20 @@ router.get('/:id/profile', (req, res) => {
     });
 });
 
+router.get('/:id/created-adventures', (req, res) => {
+    const userId = req.params.id;
+
+    // Optionally, check if the user is a guide first
+    // db.get('SELECT role FROM users WHERE id = ?', [userId], (err, user) => { ... })
+
+    db.all(
+        `SELECT * FROM posts WHERE author_id = ? ORDER BY created_at DESC`,
+        [userId],
+        (err, posts) => {
+            if (err) return res.status(500).json({ message: 'DB error' });
+            res.json(posts);
+        }
+    );
+});
+
 export default router;
