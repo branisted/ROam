@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import AddPost from './pages/AddPost';
 import PostList from './pages/PostList';
 import ProfilePage from './pages/ProfilePage';
-import HuntDetailPage from './pages/HuntDetailPage';
+import AdventureDetailPage from './pages/AdventureDetailPage.jsx';
 import SearchPage from "./pages/SearchPage.jsx";
 
 function AppRoutes() {
@@ -15,7 +15,7 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/add-post" element={<AddPost />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/hunts/:id" element={<HuntDetailPage />} />
+            <Route path="/adventure/:id" element={<AdventureDetailPage />} />
             <Route path="/search" element={<SearchPage />} />
         </Routes>
     );
