@@ -42,7 +42,7 @@ function PostList() {
         try {
             await axios.post(`http://localhost:3001/api/posts/${postId}/join`, { user_id: user.id });
             setJoinedPosts(prev => new Set([...prev, postId]));
-            navigate(`/hunts/${postId}`);
+            navigate(`/adventure/${postId}`);
         } catch (err) {
             console.error(err);
         } finally {
@@ -62,12 +62,12 @@ function PostList() {
                         <div
                             key={post.id}
                             className="bg-white rounded-lg shadow-md p-6 flex flex-col cursor-pointer group relative"
-                            onClick={() => navigate(`/hunts/${post.id}`)}
+                            onClick={() => navigate(`/adventure/${post.id}`)}
                             tabIndex={0}
                             role="button"
                             onKeyDown={e => {
                                 if (e.key === 'Enter' || e.key === ' ') {
-                                    navigate(`/hunts/${post.id}`);
+                                    navigate(`/adventure/${post.id}`);
                                 }
                             }}
                         >

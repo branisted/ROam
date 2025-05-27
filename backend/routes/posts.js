@@ -110,6 +110,116 @@ router.get('/search', (req, res) => {
     });
 });
 
+// Update (Edit) an adventure
+router.put('/:id', (req, res) => {
+    const postId = req.params.id;
+    const {
+        title,
+        location,
+        type,
+        difficulty,
+        estimated_duration,
+        description,
+        max_participants,
+        starts_on,
+        user_id
+    } = req.body;
+
+    // Verify authorization
+    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+        if (err || !row) return res.status(404).json({ message: 'Post not found' });
+        if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
+
+        // Format datetime for SQLite
+        const startsOn = starts_on.replace('T', ' ') + ':00';
+
+        db.run(
+            `UPDATE posts SET 
+                title = ?, 
+                location = ?, 
+                type = ?, 
+                difficulty = ?, 
+                estimated_duration = ?, 
+                description = ?, 
+                max_participants = ?, 
+                starts_on = ? 
+            WHERE id = ?`,
+            [
+                title,
+                location,
+                type,
+                difficulty,
+                estimated_duration,
+                description,
+                max_participants,
+                startsOn,
+                postId
+            ],
+            function(err) {
+                if (err) return res.status(500).json({ message: 'DB error' });
+                res.json({ message: 'Post updated successfully' });
+            }
+        );
+    });
+});
+
+// Delete an adventure
+router.delete('/:id', (req, res) => {
+    const postId = req.params.id;
+    const { user_id } = req.body;
+
+    // Verify authorization
+    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+        if (err || !row) return res.status(404).json({ message: 'Post not found' });
+        if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
+
+        db.run('DELETE FROM posts WHERE id = ?', [postId], function(err) {
+            if (err) return res.status(500).json({ message: 'DB error' });
+            res.json({ message: 'Post deleted successfully' });
+        });
+    });
+});
+
+// Mark adventure as completed
+router.put('/:id/complete', (req, res) => {
+    const postId = req.params.id;
+    const { user_id } = req.body;
+
+    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+        if (err || !row) return res.status(404).json({ message: 'Post not found' });
+        if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
+
+        db.run(
+            `UPDATE posts SET completed = 1 WHERE id = ?`,
+            [postId],
+            function (err) {
+                if (err) return res.status(500).json({ message: 'DB error' });
+                res.json({ message: 'Adventure marked as completed' });
+            }
+        );
+    });
+});
+
+// Mark adventure as uncompleted
+router.put('/:id/uncomplete', (req, res) => {
+    const postId = req.params.id;
+    const { user_id } = req.body;
+
+    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+        if (err || !row) return res.status(404).json({ message: 'Post not found' });
+        if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
+
+        db.run(
+            `UPDATE posts SET completed = 0 WHERE id = ?`,
+            [postId],
+            function (err) {
+                if (err) return res.status(500).json({ message: 'DB error' });
+                res.json({ message: 'Adventure marked as uncompleted' });
+            }
+        );
+    });
+});
+
 
 // Join an adventure (POST /api/posts/:id/join)
 router.post('/:id/join', (req, res) => {

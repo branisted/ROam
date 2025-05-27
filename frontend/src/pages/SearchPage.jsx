@@ -81,7 +81,7 @@ function SearchPage() {
                         <li
                             key={post.id}
                             className="border p-2 rounded hover:bg-gray-50 cursor-pointer"
-                            onClick={() => navigate(`/hunts/${post.id}`)}
+                            onClick={() => navigate(`/adventure/${post.id}`)}
                         >
                             <div className="font-medium">{post.title}</div>
                             <div className="text-sm text-gray-600">{post.type} | {post.difficulty}</div>

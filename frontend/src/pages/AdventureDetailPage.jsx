@@ -1,28 +1,30 @@
 import { useParams } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
-function HuntDetailPage() {
+function AdventureDetailPage() {
     const { id } = useParams();
-    const [hunt, setHunt] = useState(null);
+    const [adventure, setAdventure] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [participants, setParticipants] = useState([]);
     const [isJoining, setIsJoining] = useState(false);
     const [joined, setJoined] = useState(false);
+    const navigate = useNavigate();
 
     const { user } = useContext(AuthContext);
 
-    // Fetch hunt details
+    // Fetch adventure details
     useEffect(() => {
         axios.get(`http://localhost:3001/api/posts/${id}`)
             .then(res => {
-                setHunt(res.data);
+                setAdventure(res.data);
                 setLoading(false);
             })
             .catch(() => {
-                setError("Could not load hunt details.");
+                setError("Could not load adventure details.");
                 setLoading(false);
             });
     }, [id]);
@@ -73,16 +75,16 @@ function HuntDetailPage() {
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
-    if (!hunt) return null;
+    if (!adventure) return null;
 
     return (
         <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
-            <h2 className="text-2xl font-bold mb-4">{hunt.title}</h2>
-            <div className="mb-2"><strong>Location:</strong> {hunt.location}</div>
-            <div className="mb-2"><strong>Type:</strong> {hunt.type}</div>
-            <div className="mb-2"><strong>Difficulty:</strong> {hunt.difficulty}</div>
-            <div className="mb-2"><strong>Starts on:</strong> {new Date(hunt.starts_on).toLocaleString()}</div>
-            <div className="mb-2"><strong>Description:</strong> {hunt.description}</div>
+            <h2 className="text-2xl font-bold mb-4">{adventure.title}</h2>
+            <div className="mb-2"><strong>Location:</strong> {adventure.location}</div>
+            <div className="mb-2"><strong>Type:</strong> {adventure.type}</div>
+            <div className="mb-2"><strong>Difficulty:</strong> {adventure.difficulty}</div>
+            <div className="mb-2"><strong>Starts on:</strong> {new Date(adventure.starts_on).toLocaleString()}</div>
+            <div className="mb-2"><strong>Description:</strong> {adventure.description}</div>
 
             {/* Explorer: Join/Unjoin Button */}
             {user && user.role === "explorer" && (
@@ -125,8 +127,35 @@ function HuntDetailPage() {
                     )}
                 </div>
             )}
+            {user && user.role === "guide" && (
+                <div className="mt-4 flex gap-2">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
+                        onClick={() => navigate(`/edit-adventure/${id}`)}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
+                        onClick={async () => {
+                            if (window.confirm("Are you sure you want to delete this adventure?")) {
+                                try {
+                                    await axios.delete(`http://localhost:3001/api/posts/${id}`, {
+                                        data: { user_id: user.id }
+                                    });
+                                    navigate('/'); // Redirect after deletion
+                                } catch (err) {
+                                    alert("Failed to delete adventure");
+                                }
+                            }
+                        }}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
 
-export default HuntDetailPage;
+export default AdventureDetailPage;
