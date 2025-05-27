@@ -36,18 +36,35 @@ db.serialize(() => {
 db.serialize(() => {
     db.run(`
         CREATE TABLE IF NOT EXISTS posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        location TEXT NOT NULL,
-        type TEXT CHECK(type IN ('hike', 'bike ride', 'urban walk', 'nature tour', 'forest trail', 'mountain climb', 'city exploration', 'river walk', 'wildlife spotting', 'historical tour', 'food tour', 'cycling', 'stargazing', 'camping', 'other')) DEFAULT 'other',
-        difficulty TEXT CHECK(difficulty IN ('easy', 'moderate', 'hard')) DEFAULT 'easy',
-        estimated_duration TEXT NOT NULL,
-        photo BLOB,
-        description TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        author_id INTEGER NOT NULL,
-        likes INTEGER DEFAULT 0,
-        FOREIGN KEY (author_id) REFERENCES users(id)
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            location TEXT NOT NULL,
+            type TEXT CHECK(type IN ('hike', 'bike ride', 'urban walk', 'nature tour', 'forest trail', 'mountain climb', 'city exploration', 'river walk', 'wildlife spotting', 'historical tour', 'food tour', 'cycling', 'stargazing', 'camping', 'other')) DEFAULT 'other',
+            difficulty TEXT CHECK(difficulty IN ('easy', 'moderate', 'hard')) DEFAULT 'easy',
+            estimated_duration TEXT NOT NULL,
+            photo BLOB,
+            description TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            author_id INTEGER NOT NULL,
+            likes INTEGER DEFAULT 0,
+            is_joinable BOOLEAN DEFAULT 0,
+            max_participants INTEGER DEFAULT NULL,
+            starts_on DATETIME NOT NULL,
+            FOREIGN KEY (author_id) REFERENCES users(id)
+            )
+    `);
+});
+
+db.serialize(() => {
+    db.run(`
+        CREATE TABLE IF NOT EXISTS adventure_participants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (post_id) REFERENCES posts(id),
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            UNIQUE(post_id, user_id)
         )
     `);
 });

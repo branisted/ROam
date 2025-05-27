@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext'; // or your path
 
 function PostList() {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
+    const [joining, setJoining] = useState({}); // Track join button loading state
+    const { user } = useContext(AuthContext);
+    console.log("AuthContext user:", user);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -16,6 +21,34 @@ function PostList() {
         };
         fetchPosts();
     }, []);
+
+    // Helper to check if sign-ups are closed
+    const isSignUpClosed = (post) => {
+        const now = new Date();
+        if (!post.starts_on) return false;
+        if (new Date(post.starts_on) <= now) return true;
+        if (post.max_participants && post.current_participants >= post.max_participants) return true;
+        return false;
+    };
+
+    const handleJoin = async (postId) => {
+        if (!user || !user.id) {
+            alert("You must be logged in to join an adventure.");
+            setJoining(prev => ({ ...prev, [postId]: false }));
+            return;
+        }
+
+        try {
+            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, {
+                user_id: user.id
+            });
+            // handle success
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setJoining(prev => ({ ...prev, [postId]: false }));
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -70,6 +103,41 @@ function PostList() {
                                     post.location
                                 )}
                             </div>
+                            {/* Join button or sign-ups closed */}
+                            {post.is_joinable ? (
+                                <div className="mb-2">
+                                    <span className="text-xs text-gray-700">
+                                        <span className="font-medium">Starts on:</span>{' '}
+                                        {post.starts_on
+                                            ? new Date(post.starts_on).toLocaleString()
+                                            : 'Not set'}
+                                    </span>
+                                    <br />
+                                    <span className="text-xs text-gray-700">
+                                        {post.max_participants
+                                            ? `Participants: ${post.current_participants || 0}/${post.max_participants}`
+                                            : `Participants: ${post.current_participants || 0} (no limit)`}
+                                    </span>
+                                    <br />
+                                    {isSignUpClosed(post) ? (
+                                        <span className="text-red-600 font-semibold">Sign-ups closed</span>
+                                    ) : (
+                                        <button
+                                            className="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition"
+                                            onClick={() => handleJoin(post.id)}
+                                            disabled={joining[post.id]}
+                                        >
+                                            {joining[post.id] ? 'Joining...' : 'Join'}
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="mb-2">
+                                    <span className="inline-block bg-gray-200 text-gray-500 text-xs px-2 py-1 rounded">
+                                        Not joinable
+                                    </span>
+                                </div>
+                            )}
                             <div className="text-xs text-gray-400 mb-2">
                                 <span className="font-medium">Posted:</span>{' '}
                                 {post.created_at
@@ -77,10 +145,6 @@ function PostList() {
                                     : 'Unknown'}
                             </div>
                             <p className="mb-4 text-gray-700">{post.description}</p>
-                            <div className="flex items-center gap-2 mt-auto">
-                                <span className="text-pink-500">♥</span>
-                                <span className="text-gray-600 text-sm">{post.likes} likes</span>
-                            </div>
                         </div>
                     ))}
                 </div>
