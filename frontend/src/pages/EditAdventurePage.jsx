@@ -72,7 +72,7 @@ function EditAdventurePage() {
                 user_id: user.id
             });
             setSuccess("Adventure updated successfully!");
-            setTimeout(() => navigate(`/hunts/${id}`), 1000);
+            setTimeout(() => navigate(`/adventure/${id}`), 1000);
         } catch (err) {
             setError("Failed to update adventure.");
         }
