@@ -17,6 +17,12 @@ function Navbar() {
                         Add Post
                     </Link>
                 )}
+                {/* Show Profile link only when logged in */}
+                {user && (
+                    <Link to="/profile" className="text-white font-semibold hover:underline">
+                        Profile
+                    </Link>
+                )}
             </div>
             <div className="flex items-center gap-4">
                 {!user && (
