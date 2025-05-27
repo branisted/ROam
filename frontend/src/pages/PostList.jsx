@@ -38,11 +38,18 @@ function PostList() {
             return;
         }
 
+        if (user.role != 'explorer') {
+            alert("You must be an explorer to join an adventure.");
+            setJoining(prev => ({ ...prev, [postId]: false }));
+            return;
+        }
+
         try {
             await axios.post(`http://localhost:3001/api/posts/${postId}/join`, {
                 user_id: user.id
             });
             // handle success
+            alert("Adventure succesfully joined!");
         } catch (err) {
             console.error(err);
         } finally {
