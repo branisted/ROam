@@ -17,6 +17,11 @@ function Navbar() {
                         Add Post
                     </Link>
                 )}
+                {user && user.role === "explorer" && (
+                    <Link to="/search" className="text-white font-semibold hover:underline">
+                        Search
+                    </Link>
+                )}
             </div>
             <div className="flex items-center gap-4">
                 {!user && (
