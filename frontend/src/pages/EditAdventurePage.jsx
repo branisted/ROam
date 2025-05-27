@@ -28,6 +28,8 @@ function EditAdventurePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [completed, setCompleted] = useState(false);
+    const [isCompleting, setIsCompleting] = useState(false);
 
     // Fetch existing adventure data
     useEffect(() => {
@@ -44,6 +46,7 @@ function EditAdventurePage() {
                     max_participants: data.max_participants || "",
                     starts_on: data.starts_on ? data.starts_on.slice(0, 16).replace(" ", "T") : "",
                 });
+                setCompleted(Boolean(data.completed));
                 setLoading(false);
             })
             .catch(() => {
@@ -69,9 +72,44 @@ function EditAdventurePage() {
                 user_id: user.id
             });
             setSuccess("Adventure updated successfully!");
-            setTimeout(() => navigate(`/adventure/${id}`), 1000);
+            setTimeout(() => navigate(`/hunts/${id}`), 1000);
         } catch (err) {
             setError("Failed to update adventure.");
+        }
+    };
+
+    // Handle mark as completed
+    const handleMarkCompleted = async () => {
+        setIsCompleting(true);
+        setError("");
+        setSuccess("");
+        try {
+            await axios.put(`http://localhost:3001/api/posts/${id}/complete`, {
+                user_id: user.id
+            });
+            setCompleted(true);
+            setSuccess("Adventure marked as completed!");
+        } catch (err) {
+            setError("Failed to mark as completed.");
+        } finally {
+            setIsCompleting(false);
+        }
+    };
+
+    const handleMarkUncompleted = async () => {
+        setIsCompleting(true);
+        setError("");
+        setSuccess("");
+        try {
+            await axios.put(`http://localhost:3001/api/posts/${id}/uncomplete`, {
+                user_id: user.id
+            });
+            setCompleted(false);
+            setSuccess("Adventure marked as uncompleted!");
+        } catch (err) {
+            setError("Failed to mark as uncompleted.");
+        } finally {
+            setIsCompleting(false);
         }
     };
 
@@ -167,6 +205,30 @@ function EditAdventurePage() {
                     Save Changes
                 </button>
             </form>
+            <div className="mt-4">
+                {completed ? (
+                    <>
+            <span className="inline-block bg-green-200 text-green-800 text-xs px-2 py-1 rounded mr-2">
+                Adventure is completed
+            </span>
+                        <button
+                            className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600 transition"
+                            onClick={handleMarkUncompleted}
+                            disabled={isCompleting}
+                        >
+                            {isCompleting ? "Updating..." : "Mark as Uncompleted"}
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition"
+                        onClick={handleMarkCompleted}
+                        disabled={isCompleting}
+                    >
+                        {isCompleting ? "Marking..." : "Mark as Completed"}
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
