@@ -23,11 +23,6 @@ function Navbar() {
                         Profile
                     </Link>
                 )}
-                {userRole === "guide" && (
-                    <Link to="/guide-adventures" className="text-white font-semibold hover:underline">
-                        My Adventures
-                    </Link>
-                )}
             </div>
             <div className="flex items-center gap-4">
                 {!user && (

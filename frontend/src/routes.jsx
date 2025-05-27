@@ -4,7 +4,6 @@ import Login from './pages/Login';
 import AddPost from './pages/AddPost';
 import PostList from './pages/PostList';
 import ProfilePage from './pages/ProfilePage';
-import GuideAdventuresPage from './pages/GuideAdventuresPage';
 
 function AppRoutes() {
     return (
@@ -14,7 +13,6 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/add-post" element={<AddPost />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/guide-adventures" element={<GuideAdventuresPage />} />
         </Routes>
     );
 }
