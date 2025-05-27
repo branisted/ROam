@@ -85,4 +85,70 @@ router.get('/', (req, res) => {
     });
 });
 
+// Join an adventure (POST /api/posts/:id/join)
+router.post('/:id/join', (req, res) => {
+    const { user_id } = req.body;
+    const post_id = req.params.id; // Use 'id' from params, not 'postId'
+    console.log('Join attempt:', { user_id, post_id });
+
+    if (!user_id || !post_id) {
+        console.log('Missing user_id or post_id');
+        return res.status(400).json({ message: 'Missing user_id or post_id' });
+    }
+
+    // Convert post_id to a number if your DB expects an integer
+    const postIdNum = Number(post_id);
+
+    // 1. Verify user role
+    db.get(
+        `SELECT role FROM users WHERE id = ?`,
+        [user_id], // Use user_id, not userId
+        (err, user) => {
+            if (err || !user) return res.status(403).json({ message: "Unauthorized" });
+            if (user.role !== 'explorer') {
+                return res.status(403).json({ message: "Only explorers can join adventures" });
+            }
+
+            // 2. Check adventure joinability
+            db.get(
+                `SELECT is_joinable, max_participants, starts_on FROM posts WHERE id = ?`,
+                [postIdNum], // Use postIdNum, not postId
+                (err, post) => {
+                    if (!post || !post.is_joinable) {
+                        return res.status(400).json({ message: "Adventure not joinable" });
+                    }
+
+                    if (new Date(post.starts_on) <= new Date()) {
+                        return res.status(400).json({ message: "Adventure has already started" });
+                    }
+
+                    // 3. Check participant count
+                    db.get(
+                        `SELECT COUNT(*) as count FROM adventure_participants WHERE post_id = ?`,
+                        [postIdNum],
+                        (err, row) => {
+                            if (post.max_participants && row.count >= post.max_participants) {
+                                return res.status(400).json({ message: "Adventure is full" });
+                            }
+
+                            // 4. Insert participant
+                            db.run(
+                                `INSERT INTO adventure_participants (user_id, post_id) VALUES (?, ?)`,
+                                [user_id, postIdNum],
+                                function (err) {
+                                    if (err) {
+                                        console.error('Join DB error:', err.message);
+                                        return res.status(500).json({ message: 'Failed to join adventure' });
+                                    }
+                                    res.status(201).json({ message: 'Joined successfully' });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
+
 export default router;

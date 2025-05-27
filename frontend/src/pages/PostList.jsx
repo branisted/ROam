@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext'; // or your path
 
 function PostList() {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
     const [joining, setJoining] = useState({}); // Track join button loading state
+    const { user } = useContext(AuthContext);
+    console.log("AuthContext user:", user);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -28,22 +32,22 @@ function PostList() {
     };
 
     const handleJoin = async (postId) => {
-        setJoining(prev => ({ ...prev, [postId]: true }));
-        try {
-            // Replace this with your actual join API endpoint
-            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, {
-                user_id: JSON.parse(localStorage.getItem('user')).id
-            });
-            // Optimistically update UI (re-fetch or update count)
-            setPosts(posts => posts.map(post =>
-                post.id === postId
-                    ? { ...post, current_participants: (post.current_participants || 0) + 1 }
-                    : post
-            ));
-        } catch (err) {
-            alert(err.response?.data?.message || 'Failed to join');
+        if (!user || !user.id) {
+            alert("You must be logged in to join an adventure.");
+            setJoining(prev => ({ ...prev, [postId]: false }));
+            return;
         }
-        setJoining(prev => ({ ...prev, [postId]: false }));
+
+        try {
+            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, {
+                user_id: user.id
+            });
+            // handle success
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setJoining(prev => ({ ...prev, [postId]: false }));
+        }
     };
 
     return (
