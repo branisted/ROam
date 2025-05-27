@@ -189,5 +189,29 @@ router.get('/:id/participants', (req, res) => {
     );
 });
 
+// Search adventures by title, type, and difficulty
+router.get('/search', (req, res) => {
+    const { title, type, difficulty } = req.query;
+    let query = `SELECT * FROM posts WHERE 1=1`;
+    const params = [];
+
+    if (title) {
+        query += ` AND LOWER(title) LIKE ?`;
+        params.push(`%${title.toLowerCase()}%`);
+    }
+    if (type) {
+        query += ` AND type = ?`;
+        params.push(type);
+    }
+    if (difficulty) {
+        query += ` AND difficulty = ?`;
+        params.push(difficulty);
+    }
+
+    db.all(query, params, (err, rows) => {
+        if (err) return res.status(500).json({ message: 'DB error' });
+        res.json(rows);
+    });
+});
 
 export default router;
