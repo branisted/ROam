@@ -17,7 +17,7 @@ This application was developed as part of the FIS course project, with the follo
 - Clean architecture with modular components and routes.
 - Interactive and responsive UI.
 
----
+---       
 
 ## 🔧 Technologies Used
 
