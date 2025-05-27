@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext'; // or your path
+import { AuthContext } from '../context/AuthContext';
 
 function PostList() {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
-    const [joining, setJoining] = useState({}); // Track join button loading state
+    const [joining, setJoining] = useState({});
+    const [joinedPosts, setJoinedPosts] = useState(new Set());
     const { user } = useContext(AuthContext);
-    console.log("AuthContext user:", user);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -22,7 +21,6 @@ function PostList() {
         fetchPosts();
     }, []);
 
-    // Helper to check if sign-ups are closed
     const isSignUpClosed = (post) => {
         const now = new Date();
         if (!post.starts_on) return false;
@@ -38,11 +36,10 @@ function PostList() {
             return;
         }
 
+        setJoining(prev => ({ ...prev, [postId]: true }));
         try {
-            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, {
-                user_id: user.id
-            });
-            // handle success
+            await axios.post(`http://localhost:3001/api/posts/${postId}/join`, { user_id: user.id });
+            setJoinedPosts(prev => new Set([...prev, postId])); // Add post to joined set
         } catch (err) {
             console.error(err);
         } finally {
@@ -63,7 +60,6 @@ function PostList() {
                             key={post.id}
                             className="bg-white rounded-lg shadow-md p-6 flex flex-col"
                         >
-                            {/* Optional photo */}
                             {post.photo && (
                                 <img
                                     src={post.photo}
@@ -103,7 +99,6 @@ function PostList() {
                                     post.location
                                 )}
                             </div>
-                            {/* Join button or sign-ups closed */}
                             {post.is_joinable ? (
                                 <div className="mb-2">
                                     <span className="text-xs text-gray-700">
@@ -122,13 +117,19 @@ function PostList() {
                                     {isSignUpClosed(post) ? (
                                         <span className="text-red-600 font-semibold">Sign-ups closed</span>
                                     ) : (
-                                        <button
-                                            className="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition"
-                                            onClick={() => handleJoin(post.id)}
-                                            disabled={joining[post.id]}
-                                        >
-                                            {joining[post.id] ? 'Joining...' : 'Join'}
-                                        </button>
+                                        // Only show Join button for explorers
+                                        user?.role === 'explorer' && (
+                                            <button
+                                                className="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition disabled:bg-gray-400"
+                                                onClick={() => handleJoin(post.id)}
+                                                disabled={joining[post.id] || joinedPosts.has(post.id)}
+                                            >
+                                                {joinedPosts.has(post.id)
+                                                    ? 'Joined'
+                                                    : (joining[post.id] ? 'Joining...' : 'Join')
+                                                }
+                                            </button>
+                                        )
                                     )}
                                 </div>
                             ) : (

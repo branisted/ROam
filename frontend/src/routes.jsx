@@ -3,6 +3,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import AddPost from './pages/AddPost';
 import PostList from './pages/PostList';
+import ProfilePage from './pages/ProfilePage';
 
 function AppRoutes() {
     return (
@@ -11,6 +12,7 @@ function AppRoutes() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/add-post" element={<AddPost />} />
+            <Route path="/profile" element={<ProfilePage />} />
         </Routes>
     );
 }

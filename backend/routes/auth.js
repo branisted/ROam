@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
 
             // Successful login
             console.log("Login successful: ", user);
-            res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username, role: user.role } });
+            res.status(200).json({ message: 'Login successful', user: { id: user.id, username: user.username, email: user.email, role: user.role } });
         });
 
     } catch (error) {

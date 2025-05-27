@@ -26,12 +26,20 @@ function Navbar() {
                     </>
                 )}
                 {user && (
-                    <button
-                        onClick={logout}
-                        className="bg-white text-blue-600 font-semibold px-4 py-1 rounded hover:bg-blue-100 transition"
-                    >
-                        Log out
-                    </button>
+                    <>
+                        <Link
+                            to="/profile"
+                            className="bg-white text-blue-600 font-semibold px-4 py-1 rounded hover:bg-blue-100 transition"
+                        >
+                            Profile
+                        </Link>
+                        <button
+                            onClick={logout}
+                            className="bg-white text-blue-600 font-semibold px-4 py-1 rounded hover:bg-blue-100 transition"
+                        >
+                            Log out
+                        </button>
+                    </>
                 )}
             </div>
         </nav>
