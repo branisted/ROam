@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function AddPost() {
     const [title, setTitle] = useState('');
@@ -15,21 +16,25 @@ function AddPost() {
     const [startsOn, setStartsOn] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { user, loading } = useContext(AuthContext);
+
+    // Prevent unauthorized access
+    if (!loading && (!user || user.role !== "guide")) {
+        return <div className="text-center mt-8 text-lg">Only guides can add posts.</div>;
+    }
 
     const handleSubmit = async e => {
         e.preventDefault();
+        setError('');
         try {
-            const author_id = JSON.parse(localStorage.getItem('user')).id;
             const formData = new FormData();
-
             formData.append('title', title);
             formData.append('location', location);
             formData.append('type', type);
             formData.append('difficulty', difficulty);
             formData.append('estimated_duration', estimated_duration);
             formData.append('description', description);
-            formData.append('author_id', author_id);
-            formData.append('starts_on', startsOn); // New field
+            formData.append('starts_on', startsOn);
 
             // New joinable fields
             formData.append('is_joinable', isJoinable ? 1 : 0);
@@ -41,10 +46,11 @@ function AddPost() {
                 formData.append('photo', photoFile);
             }
 
-            await axios.post('http://localhost:3001/api/posts', formData, {
+            await axios.post('/api/posts', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
+                withCredentials: true // <-- Important for session cookie!
             });
 
             navigate('/');

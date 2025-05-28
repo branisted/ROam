@@ -1,11 +1,26 @@
-// Navbar.jsx
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 
 function Navbar() {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout, loading } = useContext(AuthContext);
     const userRole = user ? user.role : null;
+    const navigate = useNavigate();
+
+    // Optional: handle logout and redirect
+    const handleLogout = async () => {
+        await logout();
+        navigate("/login");
+    };
+
+    // Show nothing or a spinner while loading session state
+    if (loading) {
+        return (
+            <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
+                <div className="text-white">Loading...</div>
+            </nav>
+        );
+    }
 
     return (
         <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
@@ -39,7 +54,7 @@ function Navbar() {
                             Profile
                         </Link>
                         <button
-                            onClick={logout}
+                            onClick={handleLogout}
                             className="bg-white text-blue-600 font-semibold px-4 py-1 rounded hover:bg-blue-100 transition"
                         >
                             Log out

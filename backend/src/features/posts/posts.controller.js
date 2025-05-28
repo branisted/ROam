@@ -39,7 +39,7 @@ class PostsController {
 
     async updatePost(req, res, next) {
         try {
-            await postsService.updatePost(req.params.id, req.body, req.body.user_id);
+            await postsService.updatePost(req.params.id, req.body, req.session.user.id);
             res.json({ message: 'Post updated successfully' });
         } catch (err) {
             next(err);
@@ -48,7 +48,7 @@ class PostsController {
 
     async deletePost(req, res, next) {
         try {
-            await postsService.deletePost(req.params.id, req.body.user_id);
+            await postsService.deletePost(req.params.id, req.session.user.id);
             res.json({ message: 'Post deleted successfully' });
         } catch (err) {
             next(err);

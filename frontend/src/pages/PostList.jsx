@@ -10,7 +10,10 @@ function PostList() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const res = await axios.get('http://localhost:3001/api/posts');
+                const res = await axios.get('/api/posts', {
+                    withCredentials: true
+                });
+                console.log('API response:', res.data); // <-- Add this
                 setPosts(res.data);
             } catch (err) {
                 setError('Failed to load posts');

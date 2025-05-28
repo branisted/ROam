@@ -11,32 +11,37 @@ const ADVENTURE_TYPES = [
 const DIFFICULTIES = ["easy", "moderate", "hard"];
 
 function SearchPage() {
-    const { user } = useContext(AuthContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
     const [type, setType] = useState("");
     const [difficulty, setDifficulty] = useState("");
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        if (!user || user.role !== "explorer") {
+        if (!authLoading && (!user || user.role !== "explorer")) {
             navigate("/");
         }
-    }, [user, navigate]);
+    }, [user, authLoading, navigate]);
 
     const handleSearch = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError('');
         try {
             const params = new URLSearchParams();
             if (title) params.append("title", title);
             if (type) params.append("type", type);
             if (difficulty) params.append("difficulty", difficulty);
 
-            const res = await axios.get(`http://localhost:3001/api/posts/search?${params.toString()}`);
+            const res = await axios.get(`/api/posts/search?${params.toString()}`, {
+                withCredentials: true
+            });
             setResults(res.data);
         } catch (err) {
+            setError('Failed to search adventures.');
             setResults([]);
         } finally {
             setLoading(false);
@@ -74,8 +79,9 @@ function SearchPage() {
                     {loading ? "Searching..." : "Search"}
                 </button>
             </form>
+            {error && <div className="text-red-500 mb-2">{error}</div>}
             <div>
-                {results.length === 0 && !loading && <div>No adventures found.</div>}
+                {results.length === 0 && !loading && !error && <div>No adventures found.</div>}
                 <ul className="space-y-2">
                     {results.map(post => (
                         <li

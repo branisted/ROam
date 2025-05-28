@@ -13,7 +13,7 @@ const DIFFICULTIES = ["easy", "moderate", "hard"];
 function EditAdventurePage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
 
     const [form, setForm] = useState({
         title: "",
@@ -33,7 +33,7 @@ function EditAdventurePage() {
 
     // Fetch existing adventure data
     useEffect(() => {
-        axios.get(`http://localhost:3001/api/posts/${id}`)
+        axios.get(`/api/posts/${id}`, { withCredentials: true })
             .then(res => {
                 const data = res.data;
                 setForm({
@@ -67,14 +67,13 @@ function EditAdventurePage() {
         setError("");
         setSuccess("");
         try {
-            await axios.put(`http://localhost:3001/api/posts/${id}`, {
-                ...form,
-                user_id: user.id
+            await axios.put(`/api/posts/${id}`, form, {
+                withCredentials: true
             });
             setSuccess("Adventure updated successfully!");
             setTimeout(() => navigate(`/adventure/${id}`), 1000);
         } catch (err) {
-            setError("Failed to update adventure.");
+            setError(err.response?.data?.message || "Failed to update adventure.");
         }
     };
 
@@ -84,13 +83,11 @@ function EditAdventurePage() {
         setError("");
         setSuccess("");
         try {
-            await axios.put(`http://localhost:3001/api/posts/${id}/complete`, {
-                user_id: user.id
-            });
+            await axios.put(`/api/posts/${id}/complete`, {}, { withCredentials: true });
             setCompleted(true);
             setSuccess("Adventure marked as completed!");
         } catch (err) {
-            setError("Failed to mark as completed.");
+            setError(err.response?.data?.message || "Failed to mark as completed.");
         } finally {
             setIsCompleting(false);
         }
@@ -101,20 +98,18 @@ function EditAdventurePage() {
         setError("");
         setSuccess("");
         try {
-            await axios.put(`http://localhost:3001/api/posts/${id}/uncomplete`, {
-                user_id: user.id
-            });
+            await axios.put(`/api/posts/${id}/uncomplete`, {}, { withCredentials: true });
             setCompleted(false);
             setSuccess("Adventure marked as uncompleted!");
         } catch (err) {
-            setError("Failed to mark as uncompleted.");
+            setError(err.response?.data?.message || "Failed to mark as uncompleted.");
         } finally {
             setIsCompleting(false);
         }
     };
 
+    if (authLoading || loading) return <div>Loading...</div>;
     if (!user || user.role !== "guide") return <div className="mt-8 text-center">Only guides can edit adventures.</div>;
-    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -208,9 +203,9 @@ function EditAdventurePage() {
             <div className="mt-4">
                 {completed ? (
                     <>
-            <span className="inline-block bg-green-200 text-green-800 text-xs px-2 py-1 rounded mr-2">
-                Adventure is completed
-            </span>
+                        <span className="inline-block bg-green-200 text-green-800 text-xs px-2 py-1 rounded mr-2">
+                            Adventure is completed
+                        </span>
                         <button
                             className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600 transition"
                             onClick={handleMarkUncompleted}

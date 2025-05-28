@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 class Database {
     constructor() {
-        this.dbPath = path.resolve(__dirname, '../../db/backend.db');
+        this.dbPath = path.resolve(__dirname, 'backend.db');
         this.db = null;
         this.connect();
     }

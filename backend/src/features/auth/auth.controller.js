@@ -54,6 +54,15 @@ class AuthController {
             next(error);
         }
     }
+
+    async session(req, res) {
+        if (req.session && req.session.user) {
+            res.json({ user: req.session.user });
+        } else {
+            res.status(401).json({ user: null });
+        }
+    }
+
 }
 
 export default new AuthController();
