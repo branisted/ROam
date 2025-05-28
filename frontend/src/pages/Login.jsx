@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext.jsx";
 
@@ -7,6 +6,7 @@ function Login() {
     const { login } = useContext(AuthContext);
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = e => {
@@ -18,14 +18,14 @@ function Login() {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        try {
-            const res = await axios.post('http://localhost:3001/api/auth/login', formData, {
-                withCredentials: true
-            });
-            login(res.data.user);
+        setError('');
+        setLoading(true);
+        const result = await login(formData);
+        setLoading(false);
+        if (result.success) {
             navigate('/');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+        } else {
+            setError(result.message || 'Login failed');
         }
     };
 
@@ -54,9 +54,10 @@ function Login() {
                     />
                     <button
                         type="submit"
+                        disabled={loading}
                         className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
                     >
-                        Login
+                        {loading ? "Logging in..." : "Login"}
                     </button>
                 </form>
                 {error && <p className="text-red-500 mt-4 text-center">{error}</p>}

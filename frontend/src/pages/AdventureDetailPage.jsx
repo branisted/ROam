@@ -1,5 +1,4 @@
-import { useParams } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
@@ -14,11 +13,11 @@ function AdventureDetailPage() {
     const [joined, setJoined] = useState(false);
     const navigate = useNavigate();
 
-    const { user } = useContext(AuthContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
 
     // Fetch adventure details
     useEffect(() => {
-        axios.get(`http://localhost:3001/api/posts/${id}`)
+        axios.get(`/api/posts/${id}`, { withCredentials: true })
             .then(res => {
                 setAdventure(res.data);
                 setLoading(false);
@@ -31,7 +30,7 @@ function AdventureDetailPage() {
 
     // Fetch participants
     useEffect(() => {
-        axios.get(`http://localhost:3001/api/posts/${id}/participants`)
+        axios.get(`/api/posts/${id}/participants`, { withCredentials: true })
             .then(res => setParticipants(res.data))
             .catch(() => {});
     }, [id, joined]);
@@ -39,23 +38,18 @@ function AdventureDetailPage() {
     // Check if explorer has joined
     useEffect(() => {
         if (user && user.role === "explorer") {
-            axios.get(`http://localhost:3001/api/posts/${id}/participants`)
-                .then(res => {
-                    const isUserJoined = res.data.some(p => p.id === user.id);
-                    setJoined(isUserJoined);
-                })
-                .catch(() => {});
+            setJoined(participants.some(p => p.id === user.id));
         }
-    }, [user, id, participants.length]);
+    }, [user, participants]);
 
     // Join/Unjoin handlers
     const handleJoin = async () => {
         setIsJoining(true);
         try {
-            await axios.post(`http://localhost:3001/api/posts/${id}/join`, { user_id: user.id });
+            await axios.post(`/api/posts/${id}/join`, {}, { withCredentials: true });
             setJoined(true);
         } catch (err) {
-            alert("Failed to join.");
+            alert(err.response?.data?.message || "Failed to join.");
         } finally {
             setIsJoining(false);
         }
@@ -64,16 +58,27 @@ function AdventureDetailPage() {
     const handleUnjoin = async () => {
         setIsJoining(true);
         try {
-            await axios.post(`http://localhost:3001/api/posts/${id}/unjoin`, { user_id: user.id });
+            await axios.post(`/api/posts/${id}/unjoin`, {}, { withCredentials: true });
             setJoined(false);
         } catch (err) {
-            alert("Failed to unjoin.");
+            alert(err.response?.data?.message || "Failed to unjoin.");
         } finally {
             setIsJoining(false);
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    const handleDelete = async () => {
+        if (window.confirm("Are you sure you want to delete this adventure?")) {
+            try {
+                await axios.delete(`/api/posts/${id}`, { withCredentials: true });
+                navigate('/'); // Redirect after deletion
+            } catch (err) {
+                alert(err.response?.data?.message || "Failed to delete adventure");
+            }
+        }
+    };
+
+    if (loading || authLoading) return <div>Loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
     if (!adventure) return null;
 
@@ -137,18 +142,7 @@ function AdventureDetailPage() {
                     </button>
                     <button
                         className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
-                        onClick={async () => {
-                            if (window.confirm("Are you sure you want to delete this adventure?")) {
-                                try {
-                                    await axios.delete(`http://localhost:3001/api/posts/${id}`, {
-                                        data: { user_id: user.id }
-                                    });
-                                    navigate('/'); // Redirect after deletion
-                                } catch (err) {
-                                    alert("Failed to delete adventure");
-                                }
-                            }
-                        }}
+                        onClick={handleDelete}
                     >
                         Delete
                     </button>

@@ -1,11 +1,10 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function ProfilePage() {
-    const { user } = useContext(AuthContext);
+    const { user, loading: authLoading } = useContext(AuthContext);
     const [profile, setProfile] = useState(null); // For explorer
     const [adventures, setAdventures] = useState([]); // For guide
     const [loading, setLoading] = useState(true);
@@ -14,10 +13,10 @@ function ProfilePage() {
 
     // Redirect to home if logged out
     useEffect(() => {
-        if (!user) {
+        if (!authLoading && !user) {
             navigate('/');
         }
-    }, [user, navigate]);
+    }, [user, authLoading, navigate]);
 
     useEffect(() => {
         if (!user) return;
@@ -26,7 +25,7 @@ function ProfilePage() {
         setError('');
 
         if (user.role === "explorer") {
-            axios.get(`http://localhost:3001/api/users/${user.id}/profile`)
+            axios.get(`/api/users/${user.id}/profile`, { withCredentials: true })
                 .then(res => {
                     setProfile(res.data);
                     setLoading(false);
@@ -36,16 +35,12 @@ function ProfilePage() {
                     setLoading(false);
                 });
         } else if (user.role === "guide") {
-            axios.get(`http://localhost:3001/api/users/${user.id}/profile`)
-                .then(res => {
-                    setProfile(res.data);
-                    setLoading(false);
-                })
-                .catch(() => {
-                    setError('Could not load profile');
-                    setLoading(false);
-                });
-            axios.get(`http://localhost:3001/api/users/${user.id}/created-adventures`)
+            // Get basic profile (optional, if needed)
+            axios.get(`/api/users/${user.id}/profile`, { withCredentials: true })
+                .then(res => setProfile(res.data))
+                .catch(() => setProfile(null));
+            // Get adventures created by the guide
+            axios.get(`/api/users/${user.id}/created-adventures`, { withCredentials: true })
                 .then(res => {
                     setAdventures(res.data);
                     setLoading(false);
@@ -60,11 +55,9 @@ function ProfilePage() {
         }
     }, [user]);
 
-    if (!user) return null;
+    if (!user || authLoading) return null;
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;
-
-    console.log(profile);
 
     return (
         <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -77,11 +70,11 @@ function ProfilePage() {
             {user.role === "explorer" && profile && (
                 <>
                     <h3 className="text-xl font-semibold mb-2">Joined Adventures</h3>
-                    {profile.joinedPosts.length === 0 ? (
+                    {profile.joinedPosts && profile.joinedPosts.length === 0 ? (
                         <div>No adventures joined yet.</div>
                     ) : (
                         <ul className="space-y-2">
-                            {profile.joinedPosts.map(post => (
+                            {profile.joinedPosts && profile.joinedPosts.map(post => (
                                 <li key={post.id} className="border p-2 rounded hover:bg-gray-50 transition">
                                     <Link to={`/adventure/${post.id}`} className="block">
                                         <div className="font-medium">{post.title}</div>

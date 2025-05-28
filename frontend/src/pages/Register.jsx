@@ -16,6 +16,7 @@ function Register() {
     });
 
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = e => {
         setFormData(prev => ({
@@ -26,14 +27,17 @@ function Register() {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
         try {
-            await axios.post('http://localhost:3001/api/auth/register', formData, {
+            await axios.post('/api/auth/register', formData, {
                 withCredentials: true
             });
             navigate('/login');
         } catch (err) {
-            console.error('Registration error:', err);
             setError(err.response?.data?.message || 'Registration failed');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -106,9 +110,10 @@ function Register() {
                     </select>
                     <button
                         type="submit"
+                        disabled={loading}
                         className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
                     >
-                        Register
+                        {loading ? "Registering..." : "Register"}
                     </button>
                 </form>
                 {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
