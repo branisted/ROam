@@ -2,14 +2,14 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 const router = express.Router();
 
-import db from '../db/db.js';
+import dbInstance from '../db/db.js';
 
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
         // Get user by username
-        db.get(`SELECT * FROM users WHERE username = ?`, [username], async (err, user) => {
+        dbInstance.get(`SELECT *FROM users WHERE username = ?`, [username], async (err, user) => {
             if (err) return res.status(500).json({ message: 'Database error' });
             if (!user) return res.status(401).json({ message: 'Invalid username or password' });
 
@@ -32,7 +32,7 @@ router.post('/register', async (req, res) => {
 
     try {
         const existingUser = await new Promise((resolve, reject) => {
-            db.get("SELECT * FROM users WHERE username = ?", [email], (err, row) => {
+            dbInstance.get("SELECT * FROM users WHERE username = ?", [email], (err, row) => {
                 if (err) return reject(err);
                 resolve(row);
             });
@@ -46,7 +46,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         await new Promise((resolve, reject) => {
-            db.run(
+            dbInstance.run(
                 "INSERT INTO users (username, password, full_name, city, email, bio, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [username, hashedPassword, full_name, city, email, bio, role],
                 function (err) {

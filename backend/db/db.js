@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 const dbPath = path.resolve(__dirname, 'backend.db');
 
-const db = new sqlite3.Database(dbPath, (err) => {
+const dbInstance = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Failed to connect to database:', err.message);
     } else {
@@ -18,8 +18,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 // Create tables
-db.serialize(() => {
-    db.run(`
+dbInstance.serialize(() => {
+    dbInstance.run(`
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
@@ -33,8 +33,8 @@ db.serialize(() => {
     `);
 });
 
-db.serialize(() => {
-    db.run(`
+dbInstance.serialize(() => {
+    dbInstance.run(`
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
@@ -56,8 +56,8 @@ db.serialize(() => {
     `);
 });
 
-db.serialize(() => {
-    db.run(`
+dbInstance.serialize(() => {
+    dbInstance.run(`
         CREATE TABLE IF NOT EXISTS adventure_participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             post_id INTEGER NOT NULL,
@@ -69,5 +69,12 @@ db.serialize(() => {
         )
     `);
 });
+
+const db = {
+    get: dbInstance.get.bind(dbInstance),
+    all: dbInstance.all.bind(dbInstance),
+    run: dbInstance.run.bind(dbInstance),
+    // ... add others if you use them
+};
 
 export default db;

@@ -1,5 +1,5 @@
 import express from 'express';
-import db from '../db/db.js';
+import dbInstance from '../db/db.js';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -50,7 +50,7 @@ router.post('/', upload.single('photo'), (req, res) => {
     const joinable = typeof is_joinable !== "undefined" ? Number(is_joinable) : 0;
     const maxParts = max_participants ? Number(max_participants) : null;
 
-    db.run(
+    dbInstance.run(
         `INSERT INTO posts (
             title, location, type, difficulty, estimated_duration,
             photo, description, created_at, author_id,
@@ -79,7 +79,7 @@ router.post('/', upload.single('photo'), (req, res) => {
 
 // Get all posts
 router.get('/', (req, res) => {
-    db.all(`SELECT posts.*, users.username FROM posts JOIN users ON posts.author_id = users.id`, [], (err, rows) => {
+    dbInstance.all(`SELECT posts.*, users.username FROM posts JOIN users ON posts.author_id = users.id`, [], (err, rows) => {
         if (err) return res.status(500).json({ message: 'Error fetching posts' });
         res.json(rows);
     });
@@ -104,7 +104,7 @@ router.get('/search', (req, res) => {
         params.push(difficulty);
     }
 
-    db.all(query, params, (err, rows) => {
+    dbInstance.all(query, params, (err, rows) => {
         if (err) return res.status(500).json({ message: 'DB error' });
         res.json(rows);
     });
@@ -126,14 +126,14 @@ router.put('/:id', (req, res) => {
     } = req.body;
 
     // Verify authorization
-    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+    dbInstance.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
         if (err || !row) return res.status(404).json({ message: 'Post not found' });
         if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
 
         // Format datetime for SQLite
         const startsOn = starts_on.replace('T', ' ') + ':00';
 
-        db.run(
+        dbInstance.run(
             `UPDATE posts SET 
                 title = ?, 
                 location = ?, 
@@ -169,11 +169,11 @@ router.delete('/:id', (req, res) => {
     const { user_id } = req.body;
 
     // Verify authorization
-    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+    dbInstance.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
         if (err || !row) return res.status(404).json({ message: 'Post not found' });
         if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
 
-        db.run('DELETE FROM posts WHERE id = ?', [postId], function(err) {
+        dbInstance.run('DELETE FROM posts WHERE id = ?', [postId], function(err) {
             if (err) return res.status(500).json({ message: 'DB error' });
             res.json({ message: 'Post deleted successfully' });
         });
@@ -185,11 +185,11 @@ router.put('/:id/complete', (req, res) => {
     const postId = req.params.id;
     const { user_id } = req.body;
 
-    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+    dbInstance.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
         if (err || !row) return res.status(404).json({ message: 'Post not found' });
         if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
 
-        db.run(
+        dbInstance.run(
             `UPDATE posts SET completed = 1 WHERE id = ?`,
             [postId],
             function (err) {
@@ -205,11 +205,11 @@ router.put('/:id/uncomplete', (req, res) => {
     const postId = req.params.id;
     const { user_id } = req.body;
 
-    db.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
+    dbInstance.get('SELECT author_id FROM posts WHERE id = ?', [postId], (err, row) => {
         if (err || !row) return res.status(404).json({ message: 'Post not found' });
         if (row.author_id !== user_id) return res.status(403).json({ message: 'Unauthorized' });
 
-        db.run(
+        dbInstance.run(
             `UPDATE posts SET completed = 0 WHERE id = ?`,
             [postId],
             function (err) {
@@ -236,7 +236,7 @@ router.post('/:id/join', (req, res) => {
     const postIdNum = Number(post_id);
 
     // 1. Verify user role
-    db.get(
+    dbInstance.get(
         `SELECT role FROM users WHERE id = ?`,
         [user_id], // Use user_id, not userId
         (err, user) => {
@@ -246,7 +246,7 @@ router.post('/:id/join', (req, res) => {
             }
 
             // 2. Check adventure joinability
-            db.get(
+            dbInstance.get(
                 `SELECT is_joinable, max_participants, starts_on FROM posts WHERE id = ?`,
                 [postIdNum], // Use postIdNum, not postId
                 (err, post) => {
@@ -259,7 +259,7 @@ router.post('/:id/join', (req, res) => {
                     }
 
                     // 3. Check participant count
-                    db.get(
+                    dbInstance.get(
                         `SELECT COUNT(*) as count FROM adventure_participants WHERE post_id = ?`,
                         [postIdNum],
                         (err, row) => {
@@ -268,7 +268,7 @@ router.post('/:id/join', (req, res) => {
                             }
 
                             // 4. Insert participant
-                            db.run(
+                            dbInstance.run(
                                 `INSERT INTO adventure_participants (user_id, post_id) VALUES (?, ?)`,
                                 [user_id, postIdNum],
                                 function (err) {
@@ -290,7 +290,7 @@ router.post('/:id/join', (req, res) => {
 router.post('/:id/unjoin', (req, res) => {
     const { user_id } = req.body;
     const post_id = req.params.id;
-    db.run(
+    dbInstance.run(
         `DELETE FROM adventure_participants WHERE user_id = ? AND post_id = ?`,
         [user_id, post_id],
         function (err) {
@@ -302,7 +302,7 @@ router.post('/:id/unjoin', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const postId = req.params.id;
-    db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post) => {
+    dbInstance.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post) => {
         if (err) return res.status(500).json({ message: 'DB error' });
         if (!post) return res.status(404).json({ message: 'Post not found' });
         res.json(post);
@@ -312,7 +312,7 @@ router.get('/:id', (req, res) => {
 // Get all participants for a post
 router.get('/:id/participants', (req, res) => {
     const postId = req.params.id;
-    db.all(
+    dbInstance.all(
         `SELECT users.id, users.username, users.email
          FROM adventure_participants
          JOIN users ON users.id = adventure_participants.user_id
