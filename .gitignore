@@ -6,6 +6,7 @@ coverage/
 dist/
 build/
 backend/uploads/
+backend/src/config/environment.js
 
 # Logs
 logs
