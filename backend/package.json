@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "init-db": "node db/db.js",
-    "test": "node --experimental-vm-modules ../node_modules/.bin/jest"
+    "test": ""
   },
   "keywords": [],
   "author": "",
@@ -22,8 +22,6 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.1.1"
+    "nodemon": "^3.1.10"
   }
 }
