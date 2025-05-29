@@ -64,7 +64,7 @@ function ProfilePage() {
             <h2 className="text-2xl font-bold mb-4">Profile</h2>
             <div className="mb-4">
                 <div><strong>Username:</strong> {user.username}</div>
-                <div><strong>Email:</strong> {user.email}</div>
+                <div><strong>Email:</strong> {profile?.user?.email || user.email}</div>
                 <div><strong>Role:</strong> {user.role}</div>
             </div>
             {user.role === "explorer" && profile && (
