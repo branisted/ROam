@@ -1,15 +1,21 @@
 import session from 'express-session';
+import { RedisStore } from 'connect-redis';
+import { createClient } from 'redis';
 
-const sessionOptions = {
-    secret: process.env.SESSION_SECRET || 'your-very-secret-key', // Use env var in production!
+const redisURL = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisClient = createClient({ url: redisURL });
+
+await redisClient.connect(); // Make sure to await connection in top-level async context
+
+export default session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
-        sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24 * 7
+        path: '/',
+        sameSite: 'lax', // or 'strict' for more security
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
-};
-
-export default session(sessionOptions);
+});

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import session from './config/session.js'; // <--- NEW
+import sessionMiddleware from './config/session.js';
 import authRoutes from './features/auth/auth.routes.js';
 import postsRoutes from './features/posts/posts.routes.js';
 import usersRoutes from './features/users/users.routes.js';
@@ -23,7 +23,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(session); // <--- Add session middleware here
+app.use(sessionMiddleware);
 
 // Routes
 app.use('/api/auth', authRoutes);

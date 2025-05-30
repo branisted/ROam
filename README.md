@@ -2,11 +2,10 @@
 
 A full-stack web application that helps users discover and organize local adventures based on their interests and location.
 
-## 👥 Team Members
+## Team Members
 - Braniște Dragoș
-- Ciumacenco Victor
 
-## 📌 Project Overview
+## Project Overview
 
 Local Adventure Planner allows users to explore local adventure ideas like hiking trails, escape rooms, cultural attractions, or food tours. Users can register as either **Adventurers** or **Organizers**, with separate views and functionality.
 
@@ -19,7 +18,7 @@ This application was developed as part of the FIS course project, with the follo
 
 ---
 
-## 🔧 Technologies Used
+## Technologies Used
 
 | Layer           | Technology                                  |
 |-----------------|---------------------------------------------|
@@ -32,16 +31,46 @@ This application was developed as part of the FIS course project, with the follo
 
 ---
 
-## 🚀 Features
+## Features
 
-### ✅ Major (Sea-level) Use Cases
-- User Registration & Login (Adventurer or Organizer)
-- Create & Manage Adventures (Organizers)
-- Browse & Search Adventures (Adventurers)
-- Plan an Adventure (Adventurers)
+### Major (Sea-level) Use Cases
 
-### ✨ Minor (Fish-level) Use Cases
-- See Past Adventures
-- Mark Adventure as Completed
+- User Registration & Login (Explorer or Guide)
+- Create & Manage Adventures (Guide)
+- Browse & Search Adventures (Explorer)
+- Join an Adventure (Explorer)
+
+### Minor (Fish-level) Use Cases
+- Role-Based Access Control
+- Display Joined Adventures
+- Image Upload & Preview
+
+---
+
+## Project Setup
+
+### 0. Prerequisites
+To run this project you need to have node and redis installed. Both of these can be installed using the package manager or following official documentation:
+
+- [Node.js](https://nodejs.org/en/download)
+- [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-linux/)
 
 
+### 1. Clone the repo
+`git clone https://github.com/branisted/ROam`
+
+### 2. Install dependencies
+`npm run install:all`
+
+### 3. Set up environment variables
+- Copy `.env.example` from `backend/` to `.env` in `backend/src/config`
+- Edit as needed
+
+### 4. Run the app (both backend and frontend)
+`npm start-prod`
+
+- Backend runs on [http://localhost:3001](http://localhost:3001)
+- Frontend runs on [http://localhost:5173](http://localhost:5173)
+
+### 5. (Optional) Create Docker containers
+`docker compose up --build`
