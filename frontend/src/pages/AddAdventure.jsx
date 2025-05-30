@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext.jsx";
 
-function AddPost() {
+function AddAdventure() {
     const [title, setTitle] = useState('');
     const [location, setLocation] = useState('');
     const [type, setType] = useState('hike');
@@ -11,8 +11,6 @@ function AddPost() {
     const [estimated_duration, setEstimatedDuration] = useState('');
     const [photoFile, setPhotoFile] = useState(null);
     const [description, setDescription] = useState('');
-    const [isJoinable, setIsJoinable] = useState(false);
-    const [maxParticipants, setMaxParticipants] = useState('');
     const [startsOn, setStartsOn] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -35,12 +33,6 @@ function AddPost() {
             formData.append('estimated_duration', estimated_duration);
             formData.append('description', description);
             formData.append('starts_on', startsOn);
-
-            // New joinable fields
-            formData.append('is_joinable', isJoinable ? 1 : 0);
-            if (isJoinable && maxParticipants) {
-                formData.append('max_participants', maxParticipants);
-            }
 
             if (photoFile) {
                 formData.append('photo', photoFile);
@@ -89,11 +81,21 @@ function AddPost() {
                                 onChange={e => setType(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
-                                <option value="hike">Hike</option>
-                                <option value="bike ride">Bike Ride</option>
-                                <option value="urban walk">Urban Walk</option>
-                                <option value="nature tour">Nature Tour</option>
-                                <option value="forest trail">Forest Trail</option>
+                                <option value="hike">hike</option>
+                                <option value="bike ride">bike ride</option>
+                                <option value="urban walk">urban walk</option>
+                                <option value="nature tour">nature tour</option>
+                                <option value="forest trail">forest trail</option>
+                                <option value='mountain climb'>mountain climb</option>
+                                <option value='city exploration'>city exploration</option>
+                                <option value='river walk'>river walk</option>
+                                <option value='wildlife spotting'>wildlife spotting</option>
+                                <option value='historical tour'>historical tour</option>
+                                <option value='food tour'>food tour</option>
+                                <option value='cycling'>cycling</option>
+                                <option value='stargazing'>stargazing</option>
+                                <option value='camping'>camping</option>
+                                <option value='other'>other</option>
                             </select>
                         </div>
                         <div className="flex-1">
@@ -104,9 +106,9 @@ function AddPost() {
                                 onChange={e => setDifficulty(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                             >
-                                <option value="easy">Easy</option>
-                                <option value="moderate">Moderate</option>
-                                <option value="hard">Hard</option>
+                                <option value="easy">easy</option>
+                                <option value="moderate">moderate</option>
+                                <option value="hard">hard</option>
                             </select>
                         </div>
                     </div>
@@ -132,29 +134,32 @@ function AddPost() {
                         required
                         className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
                     />
+                    {/*Removed is joinable field nr*/}
                     {/* New fields for joinable adventure */}
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            id="isJoinable"
-                            checked={isJoinable}
-                            onChange={e => {
-                                setIsJoinable(e.target.checked);
-                                if (!e.target.checked) setMaxParticipants('');
-                            }}
-                            className="w-4 h-4"
-                        />
-                        <label htmlFor="isJoinable" className="font-medium">Make this adventure joinable</label>
-                    </div>
-                    <input
-                        type="number"
-                        min="1"
-                        placeholder="Max participants (leave blank for unlimited)"
-                        value={maxParticipants}
-                        onChange={e => setMaxParticipants(e.target.value.replace(/^0+/, ''))}
-                        disabled={!isJoinable}
-                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
+                    {/*<div className="flex items-center gap-2">*/}
+                    {/*    <input*/}
+                    {/*        type="checkbox"*/}
+                    {/*        id="isJoinable"*/}
+                    {/*        checked={isJoinable}*/}
+                    {/*        onChange={e => {*/}
+                    {/*            setIsJoinable(e.target.checked);*/}
+                    {/*            if (!e.target.checked) setMaxParticipants('');*/}
+                    {/*        }}*/}
+                    {/*        className="w-4 h-4"*/}
+                    {/*    />*/}
+                    {/*    <label htmlFor="isJoinable" className="font-medium">Make this adventure joinable</label>*/}
+                    {/*</div>*/}
+
+                    {/*Removed max participants nr*/}
+                    {/*<input*/}
+                    {/*    type="number"*/}
+                    {/*    min="1"*/}
+                    {/*    placeholder="Max participants (leave blank for unlimited)"*/}
+                    {/*    value={maxParticipants}*/}
+                    {/*    onChange={e => setMaxParticipants(e.target.value.replace(/^0+/, ''))}*/}
+                    {/*    disabled={!isJoinable}*/}
+                    {/*    className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"*/}
+                    {/*/>*/}
                     {/* New starts_on field */}
                     <label className="block font-medium">Start Date & Time</label>
                     <input
@@ -177,4 +182,4 @@ function AddPost() {
     );
 }
 
-export default AddPost;
+export default AddAdventure;

@@ -176,15 +176,15 @@ function EditAdventurePage() {
                     required
                     className="border rounded px-3 py-1"
                 />
-                <input
-                    type="number"
-                    name="max_participants"
-                    value={form.max_participants}
-                    onChange={handleChange}
-                    placeholder="Max Participants"
-                    min="1"
-                    className="border rounded px-3 py-1"
-                />
+                {/*<input*/}
+                {/*    type="number"*/}
+                {/*    name="max_participants"*/}
+                {/*    value={form.max_participants}*/}
+                {/*    onChange={handleChange}*/}
+                {/*    placeholder="Max Participants"*/}
+                {/*    min="1"*/}
+                {/*    className="border rounded px-3 py-1"*/}
+                {/*/>*/}
                 <input
                     type="datetime-local"
                     name="starts_on"

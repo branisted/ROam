@@ -28,8 +28,8 @@ function Navbar() {
                 <Link to="/" className="text-white font-semibold hover:underline">Home</Link>
                 <Link to="/" className="text-white font-semibold hover:underline">Posts</Link>
                 {userRole === "guide" && (
-                    <Link to="/add-post" className="text-white font-semibold hover:underline">
-                        Add Post
+                    <Link to="/add-adventure" className="text-white font-semibold hover:underline">
+                        Add Adventure
                     </Link>
                 )}
                 {user && user.role === "explorer" && (

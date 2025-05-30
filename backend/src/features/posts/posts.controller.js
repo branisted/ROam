@@ -61,7 +61,7 @@ class PostsController {
 
     async markCompleted(req, res, next) {
         try {
-            await postsService.markCompleted(req.params.id, req.body.user_id, true);
+            await postsService.markCompleted(req.params.id, req.session.user.id, true);
             res.json({ message: 'Adventure marked as completed' });
         } catch (err) {
             next(err);
@@ -79,7 +79,7 @@ class PostsController {
 
     async markUncompleted(req, res, next) {
         try {
-            await postsService.markCompleted(req.params.id, req.body.user_id, false);
+            await postsService.markCompleted(req.params.id, req.session.user.id, false);
             res.json({ message: 'Adventure marked as uncompleted' });
         } catch (err) {
             next(err);
