@@ -22,14 +22,14 @@ function EditAdventurePage() {
         difficulty: "",
         estimated_duration: "",
         description: "",
-        max_participants: "",
         starts_on: "",
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [completed, setCompleted] = useState(false);
-    const [isCompleting, setIsCompleting] = useState(false);
+    const [cancelled, setCancelled] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Fetch existing adventure data
     useEffect(() => {
@@ -43,10 +43,10 @@ function EditAdventurePage() {
                     difficulty: data.difficulty,
                     estimated_duration: data.estimated_duration,
                     description: data.description,
-                    max_participants: data.max_participants || "",
                     starts_on: data.starts_on ? data.starts_on.slice(0, 16).replace(" ", "T") : "",
                 });
                 setCompleted(Boolean(data.completed));
+                setCancelled(Boolean(data.cancelled));
                 setLoading(false);
             })
             .catch(() => {
@@ -66,6 +66,7 @@ function EditAdventurePage() {
         e.preventDefault();
         setError("");
         setSuccess("");
+        setIsProcessing(true);
         try {
             await axios.put(`/api/posts/${id}`, form, {
                 withCredentials: true
@@ -74,27 +75,30 @@ function EditAdventurePage() {
             setTimeout(() => navigate(`/adventure/${id}`), 1000);
         } catch (err) {
             setError(err.response?.data?.message || "Failed to update adventure.");
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     // Handle mark as completed
     const handleMarkCompleted = async () => {
-        setIsCompleting(true);
+        setIsProcessing(true);
         setError("");
         setSuccess("");
         try {
             await axios.put(`/api/posts/${id}/complete`, {}, { withCredentials: true });
             setCompleted(true);
+            setCancelled(false);
             setSuccess("Adventure marked as completed!");
         } catch (err) {
             setError(err.response?.data?.message || "Failed to mark as completed.");
         } finally {
-            setIsCompleting(false);
+            setIsProcessing(false);
         }
     };
 
     const handleMarkUncompleted = async () => {
-        setIsCompleting(true);
+        setIsProcessing(true);
         setError("");
         setSuccess("");
         try {
@@ -104,7 +108,25 @@ function EditAdventurePage() {
         } catch (err) {
             setError(err.response?.data?.message || "Failed to mark as uncompleted.");
         } finally {
-            setIsCompleting(false);
+            setIsProcessing(false);
+        }
+    };
+
+    // Handle cancel adventure
+    const handleCancelAdventure = async () => {
+        if (!window.confirm("Are you sure you want to cancel this adventure? This cannot be undone.")) return;
+        setIsProcessing(true);
+        setError("");
+        setSuccess("");
+        try {
+            await axios.put(`/api/posts/${id}/cancel`, {}, { withCredentials: true });
+            setCancelled(true);
+            setCompleted(false);
+            setSuccess("Adventure cancelled!");
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to cancel adventure.");
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -177,15 +199,6 @@ function EditAdventurePage() {
                     className="border rounded px-3 py-1"
                 />
                 <input
-                    type="number"
-                    name="max_participants"
-                    value={form.max_participants}
-                    onChange={handleChange}
-                    placeholder="Max Participants"
-                    min="1"
-                    className="border rounded px-3 py-1"
-                />
-                <input
                     type="datetime-local"
                     name="starts_on"
                     value={form.starts_on}
@@ -196,11 +209,12 @@ function EditAdventurePage() {
                 <button
                     type="submit"
                     className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
+                    disabled={isProcessing}
                 >
-                    Save Changes
+                    {isProcessing ? "Saving..." : "Save Changes"}
                 </button>
             </form>
-            <div className="mt-4">
+            <div className="mt-4 flex gap-2">
                 {completed ? (
                     <>
                         <span className="inline-block bg-green-200 text-green-800 text-xs px-2 py-1 rounded mr-2">
@@ -209,19 +223,32 @@ function EditAdventurePage() {
                         <button
                             className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600 transition"
                             onClick={handleMarkUncompleted}
-                            disabled={isCompleting}
+                            disabled={isProcessing}
                         >
-                            {isCompleting ? "Updating..." : "Mark as Uncompleted"}
+                            {isProcessing ? "Updating..." : "Mark as Uncompleted"}
                         </button>
                     </>
+                ) : cancelled ? (
+                    <span className="inline-block bg-red-200 text-red-800 text-xs px-2 py-1 rounded mr-2">
+                        Adventure is cancelled
+                    </span>
                 ) : (
-                    <button
-                        className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition"
-                        onClick={handleMarkCompleted}
-                        disabled={isCompleting}
-                    >
-                        {isCompleting ? "Marking..." : "Mark as Completed"}
-                    </button>
+                    <>
+                        <button
+                            className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition"
+                            onClick={handleMarkCompleted}
+                            disabled={isProcessing}
+                        >
+                            {isProcessing ? "Marking..." : "Mark as Completed"}
+                        </button>
+                        <button
+                            className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 transition"
+                            onClick={handleCancelAdventure}
+                            disabled={isProcessing}
+                        >
+                            {isProcessing ? "Cancelling..." : "Cancel Adventure"}
+                        </button>
+                    </>
                 )}
             </div>
         </div>

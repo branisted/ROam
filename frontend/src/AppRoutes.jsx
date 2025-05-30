@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import AddPost from './pages/AddPost';
+import AddAdventure from './pages/AddAdventure.jsx';
 import PostList from './pages/PostList';
 import ProfilePage from './pages/ProfilePage';
 import AdventureDetailPage from './pages/AdventureDetailPage.jsx';
@@ -16,10 +16,10 @@ function AppRoutes() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route
-                path="/add-post"
+                path="/add-adventure"
                 element={
                     <RoleRoute allowedRoles={["guide"]}>
-                        <AddPost />
+                        <AddAdventure />
                     </RoleRoute>
                 }
             />

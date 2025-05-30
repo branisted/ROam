@@ -5,19 +5,19 @@ class PostsRepository {
         const {
             title, location, type, difficulty, estimated_duration,
             photo, description, created_at, author_id,
-            starts_on, is_joinable, max_participants
+            starts_on
         } = post;
 
         const result = await database.run(
             `INSERT INTO posts (
                 title, location, type, difficulty, estimated_duration,
                 photo, description, created_at, author_id,
-                starts_on, is_joinable, max_participants
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                starts_on
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 title, location, type, difficulty, estimated_duration,
                 photo, description, created_at, author_id,
-                starts_on, is_joinable, max_participants
+                starts_on
             ]
         );
         return result.id;
@@ -54,16 +54,16 @@ class PostsRepository {
     async updatePost(id, post) {
         const {
             title, location, type, difficulty, estimated_duration,
-            description, max_participants, starts_on
+            description, starts_on
         } = post;
         return await database.run(
             `UPDATE posts SET
         title = ?, location = ?, type = ?, difficulty = ?,
-        estimated_duration = ?, description = ?, max_participants = ?, starts_on = ?
+        estimated_duration = ?, description = ?, starts_on = ?
       WHERE id = ?`,
             [
                 title, location, type, difficulty, estimated_duration,
-                description, max_participants, starts_on, id
+                description, starts_on, id
             ]
         );
     }
@@ -144,7 +144,7 @@ class PostsRepository {
 
     async getJoinableInfo(postId) {
         return await database.get(
-            `SELECT is_joinable, max_participants, starts_on FROM posts WHERE id = ?`,
+            `SELECT starts_on FROM posts WHERE id = ?`,
             [postId]
         );
     }
