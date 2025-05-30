@@ -8,7 +8,7 @@ const sessionOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
         sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 2 // 2 hours
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
 };
 

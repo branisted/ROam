@@ -69,18 +69,56 @@ function ProfilePage() {
             </div>
             {user.role === "explorer" && profile && (
                 <>
-                    <h3 className="text-xl font-semibold mb-2">Joined Adventures</h3>
-                    {profile.joinedPosts && profile.joinedPosts.length === 0 ? (
-                        <div>No adventures joined yet.</div>
+                    <h3 className="text-xl font-semibold mb-2">Upcoming Adventures</h3>
+                    {profile.upcoming.length === 0 ? (
+                        <div>No upcoming adventures.</div>
                     ) : (
-                        <ul className="space-y-2">
-                            {profile.joinedPosts && profile.joinedPosts.map(post => (
+                        <ul className="space-y-2 mb-6">
+                            {profile.upcoming.map(post => (
                                 <li key={post.id} className="border p-2 rounded hover:bg-gray-50 transition">
                                     <Link to={`/adventure/${post.id}`} className="block">
                                         <div className="font-medium">{post.title}</div>
                                         <div className="text-sm text-gray-600">{post.location}</div>
                                         <div className="text-xs text-gray-400">
                                             Starts on: {new Date(post.starts_on).toLocaleString()}
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+
+                    <h3 className="text-xl font-semibold mb-2">Completed Adventures</h3>
+                    {profile.completed.length === 0 ? (
+                        <div>No completed adventures.</div>
+                    ) : (
+                        <ul className="space-y-2 mb-6">
+                            {profile.completed.map(post => (
+                                <li key={post.id} className="border p-2 rounded hover:bg-gray-50 transition">
+                                    <Link to={`/adventure/${post.id}`} className="block">
+                                        <div className="font-medium">{post.title}</div>
+                                        <div className="text-sm text-gray-600">{post.location}</div>
+                                        <div className="text-xs text-gray-400">
+                                            Started on: {new Date(post.starts_on).toLocaleString()}
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+
+                    <h3 className="text-xl font-semibold mb-2">Canceled Adventures</h3>
+                    {profile.cancelled.length === 0 ? (
+                        <div>No canceled adventures.</div>
+                    ) : (
+                        <ul className="space-y-2 mb-6">
+                            {profile.cancelled.map(post => (
+                                <li key={post.id} className="border p-2 rounded hover:bg-gray-50 transition">
+                                    <Link to={`/adventure/${post.id}`} className="block">
+                                        <div className="font-medium">{post.title}</div>
+                                        <div className="text-sm text-gray-600">{post.location}</div>
+                                        <div className="text-xs text-gray-400">
+                                            Was scheduled for: {new Date(post.starts_on).toLocaleString()}
                                         </div>
                                     </Link>
                                 </li>

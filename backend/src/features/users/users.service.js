@@ -11,6 +11,13 @@ class UsersService {
     async getCreatedAdventures(userId) {
         return await usersRepository.getCreatedAdventures(userId);
     }
+
+    async getExplorerProfileWithAdventures(userId) {
+        const user = await usersRepository.getUserById(userId);
+        if (!user) throw new Error('User not found');
+        const adventures = await usersRepository.getExplorerAdventures(userId);
+        return { user, ...adventures };
+    }
 }
 
 export default new UsersService();
