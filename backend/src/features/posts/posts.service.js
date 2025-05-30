@@ -64,13 +64,13 @@ class PostsService {
 
         // 2. Check adventure joinability
         const post = await postsRepository.getJoinableInfo(postId);
-        if (!post || !post.is_joinable) throw new Error('Adventure not joinable');
+        if (!post || post.completed || post.cancelled) throw new Error('Adventure not joinable');
         if (new Date(post.starts_on) <= new Date()) throw new Error('Adventure has already started');
 
-        // 3. Check participant count
-        const count = await postsRepository.countParticipants(postId);
-        if (post.max_participants && count >= post.max_participants)
-            throw new Error('Adventure is full');
+        // // 3. Check participant count
+        // const count = await postsRepository.countParticipants(postId);
+        // if (post.max_participants && count >= post.max_participants)
+        //     throw new Error('Adventure is full');
 
         // 4. Insert participant
         try {

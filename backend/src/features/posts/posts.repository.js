@@ -144,7 +144,7 @@ class PostsRepository {
 
     async getJoinableInfo(postId) {
         return await database.get(
-            `SELECT is_joinable, max_participants, starts_on FROM posts WHERE id = ?`,
+            `SELECT starts_on FROM posts WHERE id = ?`,
             [postId]
         );
     }
