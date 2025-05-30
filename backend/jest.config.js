@@ -1,5 +1,5 @@
 export default {
     testEnvironment: 'node',
-    setupFilesAfterEnv: ['./tests/setup.js'],
+    setupFiles: ['./tests/setup.js'],
     testPathIgnorePatterns: ['/node_modules/'],
 };
