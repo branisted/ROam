@@ -7,12 +7,13 @@ class PostsRepository {
             photo, description, created_at, author_id,
             starts_on, is_joinable, max_participants
         } = post;
+
         const result = await database.run(
             `INSERT INTO posts (
-        title, location, type, difficulty, estimated_duration,
-        photo, description, created_at, author_id,
-        starts_on, is_joinable, max_participants
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                title, location, type, difficulty, estimated_duration,
+                photo, description, created_at, author_id,
+                starts_on, is_joinable, max_participants
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 title, location, type, difficulty, estimated_duration,
                 photo, description, created_at, author_id,
@@ -76,11 +77,36 @@ class PostsRepository {
         return row ? row.author_id : null;
     }
 
+    // posts.repository.js
+
     async markCompleted(id, completed) {
-        return await database.run(
-            `UPDATE posts SET completed = ? WHERE id = ?`,
-            [completed ? 1 : 0, id]
-        );
+        // If marking as completed, set cancelled to 0
+        if (completed) {
+            return await database.run(
+                `UPDATE posts SET completed = 1, cancelled = 0 WHERE id = ?`,
+                [id]
+            );
+        } else {
+            return await database.run(
+                `UPDATE posts SET completed = 0 WHERE id = ?`,
+                [id]
+            );
+        }
+    }
+
+    async markCancelled(id, cancelled) {
+        // If marking as cancelled, set completed to 0
+        if (cancelled) {
+            return await database.run(
+                `UPDATE posts SET cancelled = 1, completed = 0 WHERE id = ?`,
+                [id]
+            );
+        } else {
+            return await database.run(
+                `UPDATE posts SET cancelled = 0 WHERE id = ?`,
+                [id]
+            );
+        }
     }
 
     // Adventure participants

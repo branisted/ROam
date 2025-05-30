@@ -60,6 +60,8 @@ class Database {
                     max_participants INTEGER DEFAULT NULL,
                     starts_on DATETIME NOT NULL,
                     completed BOOLEAN DEFAULT 0,
+                    cancelled BOOLEAN DEFAULT 0,
+                    CHECK (NOT (completed = 1 AND cancelled = 1)),
                     FOREIGN KEY (author_id) REFERENCES users(id)
                     )
             `);

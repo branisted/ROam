@@ -24,6 +24,42 @@ class UsersRepository {
             [userId]
         );
     }
+
+    async getExplorerAdventures(userId) {
+        // Upcoming: not completed, not cancelled, starts_on in the future
+        const upcoming = await database.all(
+            `SELECT posts.* FROM posts
+         INNER JOIN adventure_participants ap ON posts.id = ap.post_id
+         WHERE ap.user_id = ?
+           AND posts.completed = 0
+           AND posts.cancelled = 0
+           AND datetime(posts.starts_on) > datetime('now')
+         ORDER BY posts.starts_on ASC`,
+            [userId]
+        );
+
+        // Completed: completed = 1
+        const completed = await database.all(
+            `SELECT posts.* FROM posts
+         INNER JOIN adventure_participants ap ON posts.id = ap.post_id
+         WHERE ap.user_id = ?
+           AND posts.completed = 1
+         ORDER BY posts.starts_on DESC`,
+            [userId]
+        );
+
+        // Cancelled: cancelled = 1
+        const cancelled = await database.all(
+            `SELECT posts.* FROM posts
+         INNER JOIN adventure_participants ap ON posts.id = ap.post_id
+         WHERE ap.user_id = ?
+           AND posts.cancelled = 1
+         ORDER BY posts.starts_on DESC`,
+            [userId]
+        );
+
+        return { upcoming, completed, cancelled };
+    }
 }
 
 export default new UsersRepository();

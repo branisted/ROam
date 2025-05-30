@@ -4,12 +4,10 @@ class UsersController {
     async getProfile(req, res, next) {
         try {
             const { id } = req.params;
-            const data = await usersService.getUserProfileWithJoinedPosts(id);
+            // You may want to check the user's role here if needed
+            const data = await usersService.getExplorerProfileWithAdventures(id);
             res.json(data);
         } catch (err) {
-            if (err.message === 'User not found') {
-                return res.status(404).json({ message: err.message });
-            }
             next(err);
         }
     }

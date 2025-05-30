@@ -3,7 +3,11 @@ import postsService from './posts.service.js';
 class PostsController {
     async createPost(req, res, next) {
         try {
-            const postId = await postsService.createPost(req.body, req.file, req);
+            const userId = req.session.user?.id;
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+            const postId = await postsService.createPost(req.body, req.file, req, userId);
             res.status(201).json({ message: 'Post created', postId });
         } catch (err) {
             next(err);
@@ -64,6 +68,15 @@ class PostsController {
         }
     }
 
+    async markCancelled(req, res, next) {
+        try {
+            await postsService.markCancelled(req.params.id, req.session.user.id, true);
+            res.json({ message: 'Adventure marked as cancelled' });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     async markUncompleted(req, res, next) {
         try {
             await postsService.markCompleted(req.params.id, req.body.user_id, false);
@@ -75,7 +88,7 @@ class PostsController {
 
     async joinAdventure(req, res, next) {
         try {
-            await postsService.joinAdventure(req.params.id, req.body.user_id);
+            await postsService.joinAdventure(req.params.id, req.session.user.id);
             res.status(201).json({ message: 'Joined successfully' });
         } catch (err) {
             next(err);
@@ -84,7 +97,7 @@ class PostsController {
 
     async unjoinAdventure(req, res, next) {
         try {
-            await postsService.unjoinAdventure(req.params.id, req.body.user_id);
+            await postsService.unjoinAdventure(req.params.id, req.session.user.id);
             res.json({ message: 'Unjoined successfully' });
         } catch (err) {
             next(err);

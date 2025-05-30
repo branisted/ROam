@@ -2,18 +2,20 @@ import postsRepository from './posts.repository.js';
 import database from '../../config/database.js';
 
 class PostsService {
-    async createPost(post, file, req) {
+    async createPost(post, file, req, userId) {
         if (!post.starts_on) throw new Error('Start date is required');
+        const { author_id, ...postData } = post; // Remove any existing author_id from request
         const photo = file
             ? `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
             : null;
         const created_at = new Date().toISOString();
         const startsOn = post.starts_on.replace('T', ' ') + ':00';
-        const is_joinable = typeof post.is_joinable !== "undefined" ? Number(post.is_joinable) : 0;
-        const max_participants = post.max_participants ? Number(post.max_participants) : null;
+        const is_joinable = typeof postData.is_joinable !== "undefined" ? Number(postData.is_joinable) : 0;
+        const max_participants = postData.max_participants ? Number(postData.max_participants) : null;
 
         const postId = await postsRepository.createPost({
-            ...post,
+            ...postData,
+            author_id: userId, // Set from session
             photo,
             created_at,
             starts_on: startsOn,
@@ -88,6 +90,13 @@ class PostsService {
 
     async getParticipants(postId) {
         return await postsRepository.getParticipants(postId);
+    }
+
+    async markCancelled(id, user_id, cancelled) {
+        const authorId = await postsRepository.getAuthorId(id);
+        if (!authorId) throw new Error('Post not found');
+        if (authorId !== user_id) throw new Error('Unauthorized');
+        await postsRepository.markCancelled(id, cancelled);
     }
 }
 
