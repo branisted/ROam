@@ -62,6 +62,9 @@ npm run install:all
 ### 4. Run the app (both backend and frontend)
 npm start-prod
 
+### 5. (Optional) Create Docker container
+docker compose up --build
+
 - Backend runs on [http://localhost:3001](http://localhost:3001)
 - Frontend runs on [http://localhost:5173](http://localhost:5173)
 
