@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
     const navigate = useNavigate();
@@ -117,6 +117,12 @@ function Register() {
                     </button>
                 </form>
                 {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+                <div className="mt-6 text-center text-gray-600">
+                    Already registered?{' '}
+                    <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+                        log in
+                    </Link>
+                </div>
             </div>
         </div>
     );
