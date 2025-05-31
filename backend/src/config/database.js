@@ -1,59 +1,43 @@
 import sqlite3 from 'sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
 sqlite3.verbose();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 export class Database {
-    constructor(dbPath = ':memory:') { // Set default to in-memory
+    constructor(dbPath = ':memory:') {
         this.dbPath = dbPath;
-        this.db = null; // Correct initialization
-        this.ready = this.connect(); // Store the connection promise
+        this.db = null;
     }
 
-    async connect() {
+    connect() {
         return new Promise((resolve, reject) => {
-            this.db = new sqlite3.Database(
-                this.dbPath, // Uses ':memory:' or provided path
-                sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, // Ensure DB is created
-                (err) => {
-                    if (err) {
-                        console.error('Database connection failed:', err);
-                        reject(err);
-                    } else {
-                        this.initializeTables()
-                            .then(resolve)
-                            .catch(reject);
-                    }
+            this.db = new sqlite3.Database(this.dbPath, (err) => {
+                if (err) {
+                    console.error('Database connection error:', err);
+                    reject(err);
+                } else {
+                    this.initializeTables()
+                        .then(resolve)
+                        .catch(reject);
                 }
-            );
+            });
         });
     }
 
     initializeTables() {
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
-                // Users table
+                this.db.run('PRAGMA foreign_keys = ON;');
                 this.db.run(`
                     CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT NOT NULL UNIQUE,
-                    password TEXT NOT NULL,
-                    full_name TEXT NOT NULL,
-                    city TEXT NOT NULL,
-                    email TEXT NOT NULL UNIQUE,
-                    bio TEXT DEFAULT 'No bio.',
-                    role TEXT CHECK(role IN ('explorer', 'guide')) DEFAULT 'explorer'
-                    )`,
-                    (err) => {
-                        if (err) reject(err);
-                    }
-                );
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT NOT NULL UNIQUE,
+                        password TEXT NOT NULL,
+                        full_name TEXT NOT NULL,
+                        city TEXT NOT NULL,
+                        email TEXT NOT NULL UNIQUE,
+                        bio TEXT DEFAULT 'No bio.',
+                        role TEXT CHECK(role IN ('explorer', 'guide')) DEFAULT 'explorer'
+                    )`, err => { if (err) return reject(err); });
 
-                // Posts table
                 this.db.run(`
                     CREATE TABLE IF NOT EXISTS posts (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,13 +55,8 @@ export class Database {
                         cancelled BOOLEAN DEFAULT 0,
                         CHECK (NOT (completed = 1 AND cancelled = 1)),
                         FOREIGN KEY (author_id) REFERENCES users(id)
-                    )`,
-                    (err) => {
-                        if (err) reject(err);
-                    }
-                );
+                    )`, err => { if (err) return reject(err); });
 
-                // Adventure participants table
                 this.db.run(`
                     CREATE TABLE IF NOT EXISTS adventure_participants (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,12 +66,10 @@ export class Database {
                         FOREIGN KEY (post_id) REFERENCES posts(id),
                         FOREIGN KEY (user_id) REFERENCES users(id),
                         UNIQUE(post_id, user_id)
-                    )`,
-                    (err) => {
-                        if (err) reject(err);
-                        else resolve(); // Resolve when all tables are created
-                    }
-                );
+                    )`, err => {
+                    if (err) reject(err);
+                    else resolve();
+                });
             });
         });
     }
@@ -133,7 +110,3 @@ export class Database {
         });
     }
 }
-
-// Export singleton instance
-const database = new Database();
-export default database;
