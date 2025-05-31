@@ -7,12 +7,14 @@ import ProfilePage from './pages/ProfilePage';
 import AdventureDetailPage from './pages/AdventureDetailPage.jsx';
 import SearchPage from "./pages/SearchPage.jsx";
 import EditAdventurePage from "./pages/EditAdventurePage.jsx";
-import { ProtectedRoute, RoleRoute } from './ProtectedRoute'; // Adjust import if separated
+import Home from './pages/Home';
+import { ProtectedRoute, RoleRoute } from './ProtectedRoute';
 
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<PostList />} />
+            <Route path="/" element={<Home />} /> {/* Home page as the new landing page */}
+            <Route path="/adventures" element={<PostList />} /> {/* PostList moved to /adventures */}
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route
