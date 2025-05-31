@@ -84,6 +84,15 @@ function AdventureDetailPage() {
 
     return (
         <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
+            {/* Adventure Image */}
+            {adventure.photo && (
+                <img
+                    src={adventure.photo}
+                    alt={adventure.title}
+                    className="w-full h-64 object-cover rounded mb-6"
+                    loading="lazy"
+                />
+            )}
             <h2 className="text-2xl font-bold mb-4">{adventure.title}</h2>
             <div className="mb-2"><strong>Location:</strong> {adventure.location}</div>
             <div className="mb-2"><strong>Type:</strong> {adventure.type}</div>
