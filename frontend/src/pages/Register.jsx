@@ -120,7 +120,7 @@ function Register() {
                 <div className="mt-6 text-center text-gray-600">
                     Already registered?{' '}
                     <Link to="/login" className="text-blue-600 font-semibold hover:underline">
-                        log in
+                        Log in.
                     </Link>
                 </div>
             </div>

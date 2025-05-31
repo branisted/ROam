@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext.jsx";
 
 function Login() {
@@ -61,6 +61,12 @@ function Login() {
                     </button>
                 </form>
                 {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+                <div className="mt-6 text-center text-gray-600">
+                    Don't have an account?{' '}
+                    <Link to="/register" className="text-blue-600 font-semibold hover:underline">
+                        Register now.
+                    </Link>
+                </div>
             </div>
         </div>
     );
