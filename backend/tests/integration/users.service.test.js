@@ -1,5 +1,5 @@
-import database from '../src/config/database.js';
-import usersService from '../src/features/users/users.service.js';
+import database from '../../src/config/database.js';
+import usersService from '../../src/features/users/users.service.js';
 
 describe('UsersService Integration Tests', () => {
     let testUserId;

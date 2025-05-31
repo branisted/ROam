@@ -1,5 +1,5 @@
-import database from '../src/config/database.js';
-import authService from '../src/features/auth/auth.service.js';
+import database from '../../src/config/database.js';
+import authService from '../../src/features/auth/auth.service.js';
 import bcrypt from 'bcrypt';
 
 describe('AuthService Integration Tests', () => {

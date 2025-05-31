@@ -1,5 +1,5 @@
-import database from '../src/config/database.js';
-import postsService from '../src/features/posts/posts.service.js';
+import database from '../../src/config/database.js';
+import postsService from '../../src/features/posts/posts.service.js';
 
 describe('PostsService Integration Tests', () => {
     let testGuideId;
