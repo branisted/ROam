@@ -3,6 +3,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext.jsx";
 
+// Custom hook to set the document title
+function useDocumentTitle(title) {
+    useEffect(() => {
+        document.title = title;
+    }, [title]);
+}
+
 // Manually list images in /uploads for demo (replace with API call for production)
 const demoImages = [
     'http://localhost:3001/uploads/adventure1.jpg',
@@ -12,6 +19,8 @@ const demoImages = [
 ];
 
 function Home() {
+    useDocumentTitle("ROam - Local Adventure Planner"); // Set page title
+
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
     const [currentImage, setCurrentImage] = useState(0);
@@ -104,6 +113,10 @@ function Home() {
                                     }
                                 }}
                             >
+                                {/* --- FIX: Always show the post title at the top --- */}
+                                <h3 className="text-xl font-semibold text-blue-700 mb-2 group-hover:underline">
+                                    {post.title || <span className="text-gray-400">No Title</span>}
+                                </h3>
                                 {post.photo && (
                                     <img
                                         src={post.photo}
@@ -112,14 +125,6 @@ function Home() {
                                         loading="lazy"
                                     />
                                 )}
-                                {/*<div className="absolute top-3 right-3 flex flex-col items-end gap-2">*/}
-                                {/*    <span className="bg-white border border-blue-200 text-blue-700 text-xs px-2 py-1 rounded shadow">*/}
-                                {/*        {post.completed ? "Completed" : post.cancelled ? "Cancelled" : "Upcoming"}*/}
-                                {/*    </span>*/}
-                                {/*    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded shadow">*/}
-                                {/*        {post.type}*/}
-                                {/*    </span>*/}
-                                {/*</div>*/}
                                 <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
                                     <span>
                                         <span className="font-medium">By:</span> {post.username || "Unknown"}
@@ -154,9 +159,6 @@ function Home() {
                                         : 'Unknown'}
                                 </div>
                                 <p className="mb-4 text-gray-700">{post.description}</p>
-                                <span className="absolute top-3 right-3 bg-white border border-blue-200 text-blue-700 text-xs px-2 py-1 rounded shadow">
-                                    {post.completed ? "Completed" : post.cancelled ? "Cancelled" : "Upcoming"}
-                                </span>
                             </div>
                         ))}
                     </div>
