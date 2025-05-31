@@ -2,19 +2,15 @@
   "name": "backend",
   "private": true,
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node ./src/server.js",
     "dev": "nodemon src/server.js",
     "test": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "connect-redis": "^8.1.0",
     "cors": "^2.8.5",
