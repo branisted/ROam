@@ -7,25 +7,29 @@ sqlite3.verbose();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-class Database {
-    constructor() {
-        this.dbPath = process.env.NODE_ENV === 'test'
-            ? ':memory:'
-            : path.resolve(__dirname, 'backend.db');
-        this.db = null;
+export class Database {
+    constructor(dbPath = ':memory:') { // Set default to in-memory
+        this.dbPath = dbPath;
+        this.db = null; // Correct initialization
         this.ready = this.connect(); // Store the connection promise
     }
 
-    connect() {
+    async connect() {
         return new Promise((resolve, reject) => {
-            this.db = new sqlite3.Database(this.dbPath, (err) => {
-                if (err) {
-                    console.error('Failed to connect to database:', err.message);
-                    reject(err);
-                } else {
-                    this.initializeTables().then(resolve).catch(reject);
+            this.db = new sqlite3.Database(
+                this.dbPath, // Uses ':memory:' or provided path
+                sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, // Ensure DB is created
+                (err) => {
+                    if (err) {
+                        console.error('Database connection failed:', err);
+                        reject(err);
+                    } else {
+                        this.initializeTables()
+                            .then(resolve)
+                            .catch(reject);
+                    }
                 }
-            });
+            );
         });
     }
 

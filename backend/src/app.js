@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Or your frontend domain
+    origin: 'http://localhost:4173', // Or your frontend domain
     credentials: true // <--- Allow cookies to be sent
 }));
 
