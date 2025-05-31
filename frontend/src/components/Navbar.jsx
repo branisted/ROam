@@ -7,13 +7,11 @@ function Navbar() {
     const userRole = user ? user.role : null;
     const navigate = useNavigate();
 
-    // Optional: handle logout and redirect
     const handleLogout = async () => {
         await logout();
         navigate("/login");
     };
 
-    // Show nothing or a spinner while loading session state
     if (loading) {
         return (
             <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
@@ -23,8 +21,9 @@ function Navbar() {
     }
 
     return (
-        <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow flex items-center justify-between h-14">
-            <div className="flex items-center gap-4">
+        <nav className="sticky top-0 left-0 right-0 z-50 bg-blue-600 px-6 py-3 shadow h-14 flex items-center">
+            {/* Left links */}
+            <div className="flex items-center gap-4 flex-1">
                 <Link to="/" className="text-white font-semibold hover:underline">Home</Link>
                 <Link to="/adventures" className="text-white font-semibold hover:underline">Posts</Link>
                 {userRole === "guide" && (
@@ -38,7 +37,18 @@ function Navbar() {
                     </Link>
                 )}
             </div>
-            <div className="flex items-center gap-4">
+
+            {/* Centered Logo */}
+            <div className="flex-1 flex justify-center">
+                <Link to="/" className="flex items-center select-none" tabIndex={-1}>
+                    <span className="text-2xl md:text-3xl font-extrabold" style={{ color: "#0033A0" }}>R</span>
+                    <span className="text-2xl md:text-3xl font-extrabold" style={{ color: "#ead14f" }}>O</span>
+                    <span className="text-2xl md:text-3xl font-extrabold" style={{ color: "#DA291C" }}>am</span>
+                </Link>
+            </div>
+
+            {/* Right links */}
+            <div className="flex items-center gap-4 flex-1 justify-end">
                 {!user && (
                     <>
                         <Link to="/register" className="text-white hover:underline">Register</Link>
