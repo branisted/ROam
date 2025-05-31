@@ -2,7 +2,7 @@
   "name": "ROam",
   "private": true,
   "scripts": {
-    "install:all": "npm install --prefix backend && npm install --prefix frontend && npm install concurrently",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend && npm install concurrently jest",
     "build:frontend": "npm run build --prefix frontend",
     "build": "npm run build:frontend",
     "start:backend": "cross-env NODE_ENV=production npm start --prefix backend",
